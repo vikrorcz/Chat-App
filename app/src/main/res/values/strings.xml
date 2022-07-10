@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Chat</string>
+    <string name="login">Login</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="create">Create an account</string>
+    <string name="alreadyhaveacc">Already have an account?</string>
+    <string name="register">Register</string>
+    <string name="email">Email</string>
+    <string name="registration">Registration</string>
+    <string name="invalidemail">Invalid email address</string>
+    <string name="invalidusername">Username must not be empty</string>
+    <string name="invalidpassword">Password must contain at least 5 characters</string>
+</resources>
