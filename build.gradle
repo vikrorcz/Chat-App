@@ -3,6 +3,13 @@ buildscript {
         compose_version = '1.2.0-rc01'
         kotlin_version = '1.6.21' //1.7.0
     }
+
+    repositories { mavenCentral() }
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
+    }
+
 }// Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
     id 'com.android.application' version '7.2.0' apply false
