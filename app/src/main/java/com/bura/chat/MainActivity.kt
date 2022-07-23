@@ -35,8 +35,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.bura.chat.screens.util.Screen
+import com.bura.chat.screens.view.ChatView
 import com.bura.chat.screens.view.LoginView
 import com.bura.chat.screens.view.RegistrationView
+import com.bura.chat.screens.viewmodel.ChatViewModel
 import com.bura.chat.screens.viewmodel.LoginViewModel
 import com.bura.chat.screens.viewmodel.RegistrationViewModel
 import com.bura.chat.ui.theme.ChatTheme
@@ -51,8 +53,8 @@ class MainActivity : ComponentActivity() {
 
                 NavHost(navController, Screen.LoginScreen.name) {//starting destination
                     composable(Screen.LoginScreen.name) {
-                        val mainViewModel: LoginViewModel by viewModels()
-                        LoginView(navController, mainViewModel)
+                        val loginViewModel: LoginViewModel by viewModels()
+                        LoginView(navController, loginViewModel)
                     }
 
                     composable(Screen.RegistrationScreen.name) {
@@ -60,6 +62,10 @@ class MainActivity : ComponentActivity() {
                         RegistrationView(navController, registrationViewModel)
                     }
 
+                    composable(Screen.ChatScreen.name) {
+                        val chatViewModel: ChatViewModel by viewModels()
+                        ChatView(navController, chatViewModel)
+                    }
                     //composable(
                     //    "${Screen.UserScreen.name}/{username}",
                     //    arguments = listOf(navArgument("username") { type = NavType.StringType })

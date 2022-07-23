@@ -12,14 +12,14 @@ object RestClient {
 
     //const val REGISTER_URL: String = "${BASE_URL}register"
 
-   //private val gson = GsonBuilder()
-   //    .setLenient()
-   //    .create()
+   private val gson = GsonBuilder()
+       .setLenient()
+       .create()
 
     val api: ServerApi by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
             .create(ServerApi::class.java)
     }

@@ -189,5 +189,9 @@ private fun register(context: Context, viewModel: RegistrationViewModel){
 
     viewModel.registerAccount()
 
+    if (viewModel.message.value.isNotEmpty()) {
+        Toast.makeText(context, viewModel.message.value, Toast.LENGTH_LONG).show()
+    }
+
 }
 

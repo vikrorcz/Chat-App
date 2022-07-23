@@ -4,10 +4,17 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bura.chat.screens.data.RestClient
-import com.bura.chat.screens.data.User
+import com.bura.chat.screens.data.LoginUser
+import com.bura.chat.screens.data.RegisterUser
+import com.google.gson.JsonSyntaxException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
+import java.io.IOException
+
+
+//import okhttp3.Response
 
 class RegistrationViewModel : ViewModel() {
     private val _email = MutableStateFlow("")
@@ -31,22 +38,37 @@ class RegistrationViewModel : ViewModel() {
         _password.value = password
     }
 
-    fun registerAccount() {
-        Log.e("Registered","account")
-        viewModelScope.launch {
-            val call = try {//
-                RestClient.api.registerUser(User(email.value, password.value))
-                //RestClient.api.getUser()
+    private val _message = MutableStateFlow("")
+    val message = _message.asStateFlow()
 
-            } catch (e: Exception) {
-                Log.e("Exception", e.message.toString())
+    //fun setMessage(message: String) {
+    //    _message.value = message
+    //}
+
+    fun registerAccount() {
+        viewModelScope.launch {
+            val response = try {
+                RestClient.api.registerUser(RegisterUser(email.value, username.value, password.value))
+            } catch (e: IOException) {
+                return@launch
+            } catch (e: HttpException) {
+                return@launch
+            } catch (e: JsonSyntaxException) {
+                Log.e("JsonSyntaxException", e.message.toString())
                 return@launch
             }
 
+             if (response.isSuccessful && response.body() != null) {
+                 Log.e("Response", response.body().toString())
 
-            //if (response.isSuccessful) {// && response.body() != null) {
-            //   println(response.message())
-            //}
+                 _message.emit("Registration successful")
+             }
+
+              //Log.e("Call:", call.toString())
+
+              //if (response.body() != null) {
+              //    Log.e("Response", response.message())
+              //}
         }
     }
 }

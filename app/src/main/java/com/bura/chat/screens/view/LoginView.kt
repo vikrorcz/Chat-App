@@ -1,5 +1,8 @@
 package com.bura.chat.screens.view
 
+import android.content.Context
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -29,12 +32,18 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Observer
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.bura.chat.R
 import com.bura.chat.screens.util.Screen
 import com.bura.chat.screens.util.TextComposable
+import com.bura.chat.screens.util.isEmailValid
 import com.bura.chat.screens.viewmodel.LoginViewModel
+import com.bura.chat.screens.viewmodel.RegistrationViewModel
 import com.bura.chat.ui.theme.ChatTheme
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @Composable
 fun LoginView(navController: NavController, viewModel: LoginViewModel) {
@@ -63,20 +72,23 @@ fun LoginView(navController: NavController, viewModel: LoginViewModel) {
             }
         }
     }
+
+
+
 }
 
 
 @Composable
 private fun UsernameComposable(viewModel: LoginViewModel) {
-    var endText by rememberSaveable { mutableStateOf("") }
+    var username by rememberSaveable { mutableStateOf("") }
     val focusManager = LocalFocusManager.current
 
     TextField(
         singleLine = true,
-        value = endText,
-        onValueChange = { endText = it },
+        value = username,
+        onValueChange = { username = it },
         shape = RoundedCornerShape(20.dp),
-        label = { Text(stringResource(R.string.username)) },
+        label = { Text(stringResource(R.string.usernameoremail)) },
         colors = TextFieldDefaults.textFieldColors(
             unfocusedIndicatorColor = Color.Transparent,
             focusedIndicatorColor = Color.Transparent
@@ -84,6 +96,7 @@ private fun UsernameComposable(viewModel: LoginViewModel) {
         keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done, keyboardType = KeyboardType.Text),
     )
+    viewModel.setUsername(username)
 }
 
 @Composable
@@ -116,6 +129,7 @@ private fun PasswordComposable(viewModel: LoginViewModel) {
             }
         }
     )
+    viewModel.setPassword(password)
 }
 
 @Composable
@@ -123,11 +137,27 @@ private fun ButtonComposable(viewModel: LoginViewModel, navController: NavContro
     val myContext = LocalContext.current
 
     Button(onClick = {
-
+        login(myContext, viewModel, navController)
     }) {
         Text(text = "Login")
     }
 }
+
+private fun login(context: Context, viewModel: LoginViewModel, navController: NavController) {
+    if (viewModel.username.value.isEmpty()) {
+        Toast.makeText(context, context.getString(R.string.invalidusername), Toast.LENGTH_LONG).show()
+        return
+    }
+
+    viewModel.loginAccount(navController)
+
+    viewModel.viewModelScope.launch {
+        viewModel.message.collect { toastMessage ->
+            Toast.makeText(context, toastMessage, Toast.LENGTH_LONG).show()
+        }
+    }
+}
+
 
 @Composable
 private fun CreateAccountComposable(viewModel: LoginViewModel, navController: NavController) {
