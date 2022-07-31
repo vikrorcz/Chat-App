@@ -4,13 +4,10 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.bura.chat.screens.data.LoginRegisterResponse
-import com.bura.chat.screens.data.RestClient
-import com.bura.chat.screens.data.LoginUser
+import com.bura.chat.screens.net.RestClient
+import com.bura.chat.screens.net.LoginUser
 import com.bura.chat.screens.util.Screen
-import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
-import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
@@ -47,12 +44,8 @@ class LoginViewModel : ViewModel() {
         viewModelScope.launch {
             val response = try {
                 RestClient.api.loginUser(LoginUser(username.value, password.value))
-            } catch (e: IOException) {
-                return@launch
-            } catch (e: HttpException) {
-                return@launch
-            } catch (e: JsonSyntaxException) {
-                Log.e("JsonSyntaxException", e.message.toString())
+            } catch (e: Exception) {
+                _message.emit("Connection to server failed")
                 return@launch
             }
 
@@ -64,7 +57,7 @@ class LoginViewModel : ViewModel() {
                 if (response.body()!!.message == "Logged in") {
                     navController.navigate(Screen.ChatScreen.name)
                 }
-            }
+            } else _message.emit("Connection to server failed")
         }
     }
 }

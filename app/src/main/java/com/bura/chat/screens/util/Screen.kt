@@ -4,4 +4,5 @@ enum class Screen {
     LoginScreen,
     RegistrationScreen,
     ChatScreen,
+    SettingsScreen
 }

@@ -31,6 +31,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.bura.chat.R
 import com.bura.chat.screens.util.Screen
@@ -39,6 +40,7 @@ import com.bura.chat.screens.util.isEmailValid
 import com.bura.chat.screens.viewmodel.LoginViewModel
 import com.bura.chat.screens.viewmodel.RegistrationViewModel
 import com.bura.chat.ui.theme.ChatTheme
+import kotlinx.coroutines.launch
 
 @Composable
 fun RegistrationView(navController: NavController, viewModel: RegistrationViewModel) {
@@ -189,9 +191,10 @@ private fun register(context: Context, viewModel: RegistrationViewModel){
 
     viewModel.registerAccount()
 
-    if (viewModel.message.value.isNotEmpty()) {
-        Toast.makeText(context, viewModel.message.value, Toast.LENGTH_LONG).show()
+    viewModel.viewModelScope.launch {
+        viewModel.message.collect { toastMessage ->
+            Toast.makeText(context, toastMessage, Toast.LENGTH_LONG).show()
+        }
     }
-
 }
 

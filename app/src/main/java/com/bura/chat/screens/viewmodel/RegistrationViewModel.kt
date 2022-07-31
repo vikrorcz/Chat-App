@@ -3,11 +3,12 @@ package com.bura.chat.screens.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.bura.chat.screens.data.RestClient
-import com.bura.chat.screens.data.LoginUser
-import com.bura.chat.screens.data.RegisterUser
+import com.bura.chat.screens.net.RestClient
+import com.bura.chat.screens.net.RegisterUser
 import com.google.gson.JsonSyntaxException
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
@@ -38,8 +39,8 @@ class RegistrationViewModel : ViewModel() {
         _password.value = password
     }
 
-    private val _message = MutableStateFlow("")
-    val message = _message.asStateFlow()
+    private val _message = MutableSharedFlow<String>()
+    val message = _message.asSharedFlow()
 
     //fun setMessage(message: String) {
     //    _message.value = message
@@ -58,17 +59,17 @@ class RegistrationViewModel : ViewModel() {
                 return@launch
             }
 
-             if (response.isSuccessful && response.body() != null) {
-                 Log.e("Response", response.body().toString())
+            if (response.isSuccessful && response.body() != null) {
 
-                 _message.emit("Registration successful")
-             }
+                _message.emit(response.body()!!.message)
 
-              //Log.e("Call:", call.toString())
+            }
 
-              //if (response.body() != null) {
-              //    Log.e("Response", response.message())
-              //}
+             //if (response.isSuccessful && response.body() != null) {
+             //    Log.e("Response", response.body().toString())
+//
+             //    _message.emit("Registration successful")
+             //}
         }
     }
 }

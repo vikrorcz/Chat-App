@@ -38,9 +38,11 @@ import com.bura.chat.screens.util.Screen
 import com.bura.chat.screens.view.ChatView
 import com.bura.chat.screens.view.LoginView
 import com.bura.chat.screens.view.RegistrationView
+import com.bura.chat.screens.view.SettingsView
 import com.bura.chat.screens.viewmodel.ChatViewModel
 import com.bura.chat.screens.viewmodel.LoginViewModel
 import com.bura.chat.screens.viewmodel.RegistrationViewModel
+import com.bura.chat.screens.viewmodel.SettingsViewModel
 import com.bura.chat.ui.theme.ChatTheme
 
 class MainActivity : ComponentActivity() {
@@ -65,6 +67,11 @@ class MainActivity : ComponentActivity() {
                     composable(Screen.ChatScreen.name) {
                         val chatViewModel: ChatViewModel by viewModels()
                         ChatView(navController, chatViewModel)
+                    }
+
+                    composable(Screen.SettingsScreen.name) {
+                        val settingsViewModel: SettingsViewModel by viewModels()
+                        SettingsView(navController, settingsViewModel)
                     }
                     //composable(
                     //    "${Screen.UserScreen.name}/{username}",
