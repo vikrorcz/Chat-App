@@ -1,4 +1,4 @@
-package com.bura.chat.screens.net
+package com.bura.chat.net
 
 import com.google.gson.GsonBuilder
 import retrofit2.Retrofit

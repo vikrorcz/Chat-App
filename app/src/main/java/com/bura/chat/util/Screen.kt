@@ -1,8 +1,9 @@
-package com.bura.chat.screens.util
+package com.bura.chat.util
 
 enum class Screen {
     LoginScreen,
     RegistrationScreen,
     ChatScreen,
-    SettingsScreen
+    SettingsScreen,
+    ProfileScreen
 }

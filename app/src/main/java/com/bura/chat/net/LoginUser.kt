@@ -1,4 +1,4 @@
-package com.bura.chat.screens.net
+package com.bura.chat.net
 
 data class LoginUser (
     val username: String,

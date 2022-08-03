@@ -3,8 +3,8 @@ package com.bura.chat.screens.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.bura.chat.screens.net.RestClient
-import com.bura.chat.screens.net.RegisterUser
+import com.bura.chat.net.RestClient
+import com.bura.chat.net.RegisterUser
 import com.google.gson.JsonSyntaxException
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -1,17 +1,21 @@
 package com.bura.chat.screens.viewmodel
 
-import android.util.Log
+import android.content.Context
+import android.content.Context.MODE_PRIVATE
+import android.content.SharedPreferences
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.bura.chat.screens.net.RestClient
-import com.bura.chat.screens.net.LoginUser
-import com.bura.chat.screens.util.Screen
-import com.google.gson.JsonSyntaxException
+import com.bura.chat.data.UserPreferences
+import com.bura.chat.net.LoginUser
+import com.bura.chat.net.RestClient
+import com.bura.chat.util.Screen
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import retrofit2.HttpException
-import java.io.IOException
+import androidx.compose.runtime.LaunchedEffect as LaunchedEffect
+
 
 class LoginViewModel : ViewModel() {
     private val _username = MutableStateFlow("")
@@ -28,17 +32,17 @@ class LoginViewModel : ViewModel() {
         _password.value = password
     }
 
-/*
-    private val _message = MutableStateFlow("")
-    val message = _message.asStateFlow()
+    private val _rememberMe = MutableStateFlow(false)
+    val rememberMe = _rememberMe.asStateFlow()
 
-    fun setMessage(message: String) {
-        _message.value = message
+    fun setRememberMe(boolean: Boolean) {
+        _rememberMe.value = boolean
     }
-*/
+
     private val _message = MutableSharedFlow<String>()
     val message = _message.asSharedFlow()
 
+    lateinit var userPreferences: UserPreferences
 
     fun loginAccount(navController: NavController) {
         viewModelScope.launch {
@@ -55,9 +59,15 @@ class LoginViewModel : ViewModel() {
                 _message.emit(response.body()!!.message)
 
                 if (response.body()!!.message == "Logged in") {
+
+                    if (rememberMe.value) {
+                        userPreferences.setPref(UserPreferences.Prefs.rememberme, true)
+                    }
+
                     navController.navigate(Screen.ChatScreen.name)
                 }
             } else _message.emit("Connection to server failed")
         }
     }
 }
+

@@ -1,4 +1,4 @@
-package com.bura.chat.screens.util
+package com.bura.chat.util
 
 import android.text.TextUtils
 

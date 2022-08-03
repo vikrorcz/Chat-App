@@ -1,7 +1,6 @@
 package com.bura.chat.screens.view
 
 import android.content.Context
-import android.text.TextUtils
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -30,14 +29,12 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.bura.chat.R
-import com.bura.chat.screens.util.Screen
-import com.bura.chat.screens.util.TextComposable
-import com.bura.chat.screens.util.isEmailValid
-import com.bura.chat.screens.viewmodel.LoginViewModel
+import com.bura.chat.util.Screen
+import com.bura.chat.util.TextComposable
+import com.bura.chat.util.isEmailValid
 import com.bura.chat.screens.viewmodel.RegistrationViewModel
 import com.bura.chat.ui.theme.ChatTheme
 import kotlinx.coroutines.launch

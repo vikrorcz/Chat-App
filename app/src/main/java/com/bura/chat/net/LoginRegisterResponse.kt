@@ -1,3 +1,3 @@
-package com.bura.chat.screens.net
+package com.bura.chat.net
 
 data class LoginRegisterResponse(val message: String)

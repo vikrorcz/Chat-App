@@ -1,17 +1,13 @@
 package com.bura.chat.screens.view
 
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
@@ -19,11 +15,9 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
@@ -32,21 +26,28 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.bura.chat.R
-import com.bura.chat.screens.util.Screen
-import com.bura.chat.screens.util.TextComposable
-import com.bura.chat.screens.util.isEmailValid
+import com.bura.chat.data.UserPreferences
+import com.bura.chat.util.Screen
+import com.bura.chat.util.TextComposable
 import com.bura.chat.screens.viewmodel.LoginViewModel
-import com.bura.chat.screens.viewmodel.RegistrationViewModel
 import com.bura.chat.ui.theme.ChatTheme
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @Composable
 fun LoginView(navController: NavController, viewModel: LoginViewModel) {
+
+    viewModel.userPreferences = UserPreferences(LocalContext.current)
+
+    if (viewModel.userPreferences.getPref(UserPreferences.Prefs.rememberme)) {
+        LaunchedEffect(Unit) {
+            navController.navigate(Screen.ChatScreen.name)
+        }
+    }
 
     ChatTheme {
         Surface(
@@ -64,7 +65,7 @@ fun LoginView(navController: NavController, viewModel: LoginViewModel) {
                 Spacer(modifier = Modifier.height(20.dp))
                 PasswordComposable(viewModel = viewModel)
                 Spacer(modifier = Modifier.height(40.dp))
-                KeepMeLoggedInComposable()
+                KeepMeLoggedInComposable(viewModel)
                 Spacer(modifier = Modifier.height(20.dp))
                 ButtonComposable(viewModel = viewModel, navController = navController)
                 Spacer(modifier = Modifier.height(120.dp))
@@ -72,9 +73,6 @@ fun LoginView(navController: NavController, viewModel: LoginViewModel) {
             }
         }
     }
-
-
-
 }
 
 
@@ -174,7 +172,9 @@ private fun CreateAccountComposable(viewModel: LoginViewModel, navController: Na
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun KeepMeLoggedInComposable() {
+private fun KeepMeLoggedInComposable(viewModel: LoginViewModel) {
+    val myContext = LocalContext.current
+
     val checkedState = remember { mutableStateOf(false) }
 
     Row {
@@ -186,5 +186,9 @@ private fun KeepMeLoggedInComposable() {
 
         Text(text = "Keep me logged in", Modifier.padding(12.dp))
     }
+
+    //userPreferences.edit { prefs -> prefs[Keys.HIDE_VISITED] = hideVisited }
+   //viewModel.keepMeLoggedIn(userPreferences, checkedState.value)
+    viewModel.setRememberMe(checkedState.value)
 
 }

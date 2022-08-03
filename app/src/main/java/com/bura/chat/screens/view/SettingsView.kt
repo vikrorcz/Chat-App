@@ -1,6 +1,5 @@
 package com.bura.chat.screens.view
 
-import android.database.CursorIndexOutOfBoundsException
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -27,12 +25,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.bura.chat.R
-import com.bura.chat.screens.net.LoginUser
-import com.bura.chat.screens.net.RestClient
-import com.bura.chat.screens.util.Screen
-import com.bura.chat.screens.util.TextComposable
-import com.bura.chat.screens.viewmodel.LoginViewModel
+import com.bura.chat.util.Screen
 import com.bura.chat.screens.viewmodel.SettingsViewModel
 import com.bura.chat.ui.theme.ChatTheme
 import kotlinx.coroutines.launch

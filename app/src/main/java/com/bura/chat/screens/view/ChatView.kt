@@ -7,18 +7,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
-import com.bura.chat.R
-import com.bura.chat.screens.util.Screen
-import com.bura.chat.screens.util.TextComposable
+import com.bura.chat.util.Screen
 import com.bura.chat.screens.viewmodel.ChatViewModel
-import com.bura.chat.screens.viewmodel.RegistrationViewModel
 import com.bura.chat.ui.theme.ChatTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -62,7 +55,8 @@ private fun ToolBarComposable(navController: NavController) {
                         expanded = showMenu,
                         onDismissRequest = { showMenu = false }
                     ) {
-                        DropdownMenuItem(text = { Text(text = "Profile") }, onClick = { /*TODO*/ })
+                        DropdownMenuItem(text = { Text(text = "Profile") }, onClick = { navController.navigate(
+                            Screen.ProfileScreen.name) })
                         DropdownMenuItem(text = { Text(text = "Settings") }, onClick = { navController.navigate(
                             Screen.SettingsScreen.name) })
                         DropdownMenuItem(text = { Text(text = "Privacy policy") }, onClick = { /*TODO*/ })

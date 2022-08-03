@@ -2,10 +2,8 @@ package com.bura.chat.screens.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.bura.chat.screens.net.LoginUser
-import com.bura.chat.screens.net.RestClient
-import com.bura.chat.screens.net.UpdateUserPassword
-import com.bura.chat.screens.util.Screen
+import com.bura.chat.net.RestClient
+import com.bura.chat.net.UpdateUserPassword
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
