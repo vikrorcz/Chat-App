@@ -3,7 +3,8 @@ package com.bura.chat.screens.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bura.chat.net.RestClient
-import com.bura.chat.net.UpdateUserPassword
+import com.bura.chat.net.requests.RegisterUser
+import com.bura.chat.net.requests.UpdateUserPassword
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -31,7 +32,9 @@ class SettingsViewModel : ViewModel() {
     fun changePassword() {
         viewModelScope.launch {
             val response = try {
-                RestClient.api.updatePassword(UpdateUserPassword("viktor", currentPassword.value, newPassword.value))
+                //RestClient.api.updatePassword(UpdateUserPassword("viktor", currentPassword.value, newPassword.value))
+                val restClient = RestClient("")
+                restClient.api.updatePassword(UpdateUserPassword("viktor", currentPassword.value, newPassword.value))
             } catch (e: Exception) {
                 _message.emit("Connection to server failed")
                 return@launch

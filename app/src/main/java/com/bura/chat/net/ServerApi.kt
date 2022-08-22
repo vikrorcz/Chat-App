@@ -1,7 +1,14 @@
 package com.bura.chat.net
 
+import com.bura.chat.net.requests.LoginUser
+import com.bura.chat.net.requests.RegisterUser
+import com.bura.chat.net.requests.UpdateUserPassword
+import com.bura.chat.net.responses.AutoLoginResponse
+import com.bura.chat.net.responses.LoginRegisterResponse
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.POST
 
 
@@ -16,5 +23,8 @@ interface ServerApi {
 
     @POST("update")
     suspend fun updatePassword(@Body updateUserPassword: UpdateUserPassword): Response<LoginRegisterResponse>
+
+    @GET("auto-login")
+    suspend fun autoLoginUser(@Header("Authorization") token: String): Response<AutoLoginResponse>
 
 }

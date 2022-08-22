@@ -9,7 +9,9 @@ class UserPreferences(private val context: Context) {
     //lateinit var spEditor: SharedPreferences.Editor
 
     enum class Prefs {
-        rememberme
+        rememberme,
+        username,
+        token
     }
 
     fun setPref(pref: Prefs,boolean: Boolean) {
@@ -20,8 +22,22 @@ class UserPreferences(private val context: Context) {
         }
     }
 
-    fun getPref(pref: Prefs): Boolean {
+    fun setPref(pref: Prefs,string: String) {
+        val sharedPref = context.getSharedPreferences("chat-prefs", Context.MODE_PRIVATE) ?: return
+        with (sharedPref.edit()) {
+            putString(pref.name, string)
+            apply()
+        }
+    }
+
+    fun getBooleanPref(pref: Prefs): Boolean {
         val sharedPref = context.getSharedPreferences("chat-prefs", Context.MODE_PRIVATE)
         return sharedPref.getBoolean(pref.name, false)
+    }
+
+    fun getStringPref(pref: Prefs): String {
+        val sharedPref = context.getSharedPreferences("chat-prefs", Context.MODE_PRIVATE)
+        return sharedPref.getString(pref.name, "")!!
+
     }
 }

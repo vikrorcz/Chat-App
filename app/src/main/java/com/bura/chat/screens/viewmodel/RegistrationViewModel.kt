@@ -3,8 +3,10 @@ package com.bura.chat.screens.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.bura.chat.data.UserPreferences
 import com.bura.chat.net.RestClient
-import com.bura.chat.net.RegisterUser
+import com.bura.chat.net.requests.LoginUser
+import com.bura.chat.net.requests.RegisterUser
 import com.google.gson.JsonSyntaxException
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -49,7 +51,9 @@ class RegistrationViewModel : ViewModel() {
     fun registerAccount() {
         viewModelScope.launch {
             val response = try {
-                RestClient.api.registerUser(RegisterUser(email.value, username.value, password.value))
+                //RestClient.api.registerUser(RegisterUser(email.value, username.value, password.value))
+                val restClient = RestClient("")
+                restClient.api.registerUser(RegisterUser(email.value, username.value, password.value))
             } catch (e: IOException) {
                 return@launch
             } catch (e: HttpException) {

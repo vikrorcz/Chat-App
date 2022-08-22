@@ -68,6 +68,7 @@ fun RegistrationView(navController: NavController, viewModel: RegistrationViewMo
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun UsernameComposable(viewModel: RegistrationViewModel) {
     var username by rememberSaveable { mutableStateOf("") }
@@ -89,6 +90,7 @@ private fun UsernameComposable(viewModel: RegistrationViewModel) {
     viewModel.setUsername(username)
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun EmailComposable(viewModel: RegistrationViewModel) {
     var email by rememberSaveable { mutableStateOf("") }
@@ -111,6 +113,7 @@ private fun EmailComposable(viewModel: RegistrationViewModel) {
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PasswordComposable(viewModel: RegistrationViewModel) {
     var password by rememberSaveable { mutableStateOf("") }

@@ -26,9 +26,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.bura.chat.R
 import com.bura.chat.data.UserPreferences
@@ -43,11 +41,37 @@ fun LoginView(navController: NavController, viewModel: LoginViewModel) {
 
     viewModel.userPreferences = UserPreferences(LocalContext.current)
 
-    if (viewModel.userPreferences.getPref(UserPreferences.Prefs.rememberme)) {
+
+    val context = LocalContext.current
+
+    /*
+    if (viewModel.userPreferences.getBooleanPref(UserPreferences.Prefs.rememberme)) {
         LaunchedEffect(Unit) {
-            navController.navigate(Screen.ChatScreen.name)
+
+            //navController.navigate(Screen.ChatScreen.name)
+            viewModel.autoLoginAccount(navController)
+
+            viewModel.viewModelScope.launch {
+                viewModel.message.collect { toastMessage ->
+                    Toast.makeText(context, toastMessage, Toast.LENGTH_LONG).show()
+                }
+            }
         }
     }
+     */
+    if (viewModel.userPreferences.getBooleanPref(UserPreferences.Prefs.rememberme)) {
+        //Launched effect fixes screen flicker
+        LaunchedEffect(Unit) {
+            viewModel.autoLoginAccount(navController)
+
+            viewModel.viewModelScope.launch {
+                viewModel.message.collect { toastMessage ->
+                    Toast.makeText(context, toastMessage, Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
+
 
     ChatTheme {
         Surface(
@@ -76,6 +100,7 @@ fun LoginView(navController: NavController, viewModel: LoginViewModel) {
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun UsernameComposable(viewModel: LoginViewModel) {
     var username by rememberSaveable { mutableStateOf("") }
@@ -97,6 +122,7 @@ private fun UsernameComposable(viewModel: LoginViewModel) {
     viewModel.setUsername(username)
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PasswordComposable(viewModel: LoginViewModel) {
     var password by rememberSaveable { mutableStateOf("") }

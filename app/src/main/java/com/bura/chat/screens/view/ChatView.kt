@@ -1,11 +1,13 @@
 package com.bura.chat.screens.view
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -14,7 +16,6 @@ import com.bura.chat.util.Screen
 import com.bura.chat.screens.viewmodel.ChatViewModel
 import com.bura.chat.ui.theme.ChatTheme
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatView(navController: NavController, viewModel: ChatViewModel) {
     ChatTheme {
@@ -24,10 +25,18 @@ fun ChatView(navController: NavController, viewModel: ChatViewModel) {
 
         ) {
             ToolBarComposable(navController)
+
+            Column(modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment  =  Alignment.CenterHorizontally,
+            ) {
+               Text("Username: ")
+            }
         }
     }
 }
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ToolBarComposable(navController: NavController) {

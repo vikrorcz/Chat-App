@@ -1,4 +1,4 @@
-package com.bura.chat.net
+package com.bura.chat.net.requests
 
 
 data class UpdateUserPassword (

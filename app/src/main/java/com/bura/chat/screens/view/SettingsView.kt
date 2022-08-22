@@ -1,5 +1,6 @@
 package com.bura.chat.screens.view
 
+import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -58,6 +59,7 @@ fun SettingsView(navController: NavController, viewModel: SettingsViewModel) {
     }
 }
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ToolBarComposable(navController: NavController) {
@@ -82,9 +84,11 @@ private fun ToolBarComposable(navController: NavController) {
                 }
             )
         }, content = {
-        })
+        }
+    )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun CurrentPasswordComposable(viewModel: SettingsViewModel) {
     var password by rememberSaveable { mutableStateOf("") }
@@ -118,6 +122,7 @@ private fun CurrentPasswordComposable(viewModel: SettingsViewModel) {
     viewModel.setCurrentPassword(password)
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun NewPasswordComposable(viewModel: SettingsViewModel) {
     var password by rememberSaveable { mutableStateOf("") }
