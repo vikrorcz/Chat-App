@@ -12,4 +12,6 @@
     <string name="invalidemail">Invalid email address</string>
     <string name="invalidusername">Username must not be empty</string>
     <string name="invalidpassword">Password must contain at least 5 characters</string>
+    <string name="connectionfail">Connection to server failed</string>
+    <string name="registersuccess">Registration successful</string>
 </resources>

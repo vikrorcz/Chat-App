@@ -1,10 +1,9 @@
 package com.bura.chat.screens.view
 
+import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -17,12 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.semantics.Role.Companion.Image
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.bura.chat.R
-import com.bura.chat.screens.viewmodel.LoginViewModel
-import com.bura.chat.screens.viewmodel.ProfileViewModel
 import com.bura.chat.ui.theme.ChatTheme
 import com.bura.chat.util.Screen
 import androidx.compose.foundation.Image
@@ -32,11 +27,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewModelScope
 import com.bura.chat.data.UserPreferences
-import com.bura.chat.screens.viewmodel.SettingsViewModel
+import com.bura.chat.screens.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun ProfileView (navController: NavController, viewModel: ProfileViewModel) {
+fun ProfileView (navController: NavController, viewModel: MainViewModel) {
+
+
     ChatTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
@@ -57,6 +54,7 @@ fun ProfileView (navController: NavController, viewModel: ProfileViewModel) {
     }
 }
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ToolBarComposable(navController: NavController) {
@@ -99,7 +97,7 @@ private fun ProfileImageComposable() {
 }
 
 @Composable
-private fun LogoutButtonComposable(navController: NavController ,viewModel: ProfileViewModel) {
+private fun LogoutButtonComposable(navController: NavController ,viewModel: MainViewModel) {
     val myContext = LocalContext.current
 
     Button(onClick = {

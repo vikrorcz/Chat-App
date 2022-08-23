@@ -1,6 +1,5 @@
 package com.bura.chat.screens.view
 
-import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -32,46 +31,49 @@ import com.bura.chat.R
 import com.bura.chat.data.UserPreferences
 import com.bura.chat.util.Screen
 import com.bura.chat.util.TextComposable
-import com.bura.chat.screens.viewmodel.LoginViewModel
+import com.bura.chat.screens.viewmodel.MainViewModel
+import com.bura.chat.screens.viewmodel.ui.UiState
+import com.bura.chat.screens.viewmodel.ui.UiEvent
+import com.bura.chat.screens.viewmodel.ui.UiResponse
 import com.bura.chat.ui.theme.ChatTheme
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 @Composable
-fun LoginView(navController: NavController, viewModel: LoginViewModel) {
+fun LoginView(navController: NavController, viewModel: MainViewModel) {
 
+    val state = viewModel.uiState
+    val context = LocalContext.current
     viewModel.userPreferences = UserPreferences(LocalContext.current)
 
 
-    val context = LocalContext.current
-
-    /*
-    if (viewModel.userPreferences.getBooleanPref(UserPreferences.Prefs.rememberme)) {
-        LaunchedEffect(Unit) {
-
-            //navController.navigate(Screen.ChatScreen.name)
-            viewModel.autoLoginAccount(navController)
-
-            viewModel.viewModelScope.launch {
-                viewModel.message.collect { toastMessage ->
-                    Toast.makeText(context, toastMessage, Toast.LENGTH_LONG).show()
-                }
-            }
-        }
-    }
-     */
+    //AUTO LOGIN
     if (viewModel.userPreferences.getBooleanPref(UserPreferences.Prefs.rememberme)) {
         //Launched effect fixes screen flicker
         LaunchedEffect(Unit) {
             viewModel.autoLoginAccount(navController)
-
-            viewModel.viewModelScope.launch {
-                viewModel.message.collect { toastMessage ->
-                    Toast.makeText(context, toastMessage, Toast.LENGTH_LONG).show()
-                }
-            }
         }
     }
 
+    LaunchedEffect(viewModel, context) {
+
+        viewModel.uiResponse.collect {
+            if (viewModel.uiResponse.value == UiResponse.USERNAME_ERROR) {
+                Toast.makeText(context, R.string.invalidusername, Toast.LENGTH_LONG).show()
+                viewModel.setUiResponse(UiResponse.NULL)//required, otherwise it wouldn't collect the state on next occasion
+            }
+
+            if (viewModel.uiResponse.value == UiResponse.CONNECTION_FAIL) {
+                Toast.makeText(context, R.string.connectionfail, Toast.LENGTH_LONG).show()
+                viewModel.setUiResponse(UiResponse.NULL)//required, otherwise it wouldn't collect the state on next occasion
+            }
+
+            if (viewModel.uiResponse.value == UiResponse.LOGIN_SUCCESS) {
+                navController.navigate(Screen.ChatScreen.name)
+                viewModel.setUiResponse(UiResponse.NULL)//required, otherwise it wouldn't collect the state on next occasion
+            }
+        }
+    }
 
     ChatTheme {
         Surface(
@@ -85,11 +87,11 @@ fun LoginView(navController: NavController, viewModel: LoginViewModel) {
 
                 TextComposable(text = stringResource(R.string.login))
                 Spacer(modifier = Modifier.height(20.dp))
-                UsernameComposable(viewModel = viewModel)
+                UsernameComposable(state, viewModel = viewModel)
                 Spacer(modifier = Modifier.height(20.dp))
-                PasswordComposable(viewModel = viewModel)
+                PasswordComposable(state, viewModel = viewModel)
                 Spacer(modifier = Modifier.height(40.dp))
-                KeepMeLoggedInComposable(viewModel)
+                KeepMeLoggedInComposable(state,viewModel)
                 Spacer(modifier = Modifier.height(20.dp))
                 ButtonComposable(viewModel = viewModel, navController = navController)
                 Spacer(modifier = Modifier.height(120.dp))
@@ -102,14 +104,16 @@ fun LoginView(navController: NavController, viewModel: LoginViewModel) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun UsernameComposable(viewModel: LoginViewModel) {
-    var username by rememberSaveable { mutableStateOf("") }
+private fun UsernameComposable(state: UiState, viewModel: MainViewModel) {
+    //var username by rememberSaveable { mutableStateOf("") }
     val focusManager = LocalFocusManager.current
 
     TextField(
         singleLine = true,
-        value = username,
-        onValueChange = { username = it },
+        //value = username,
+        value = state.loginUsername,
+        //onValueChange = { username = it },
+        onValueChange = { viewModel.onEvent(UiEvent.LoginUsernameChanged(it))},
         shape = RoundedCornerShape(20.dp),
         label = { Text(stringResource(R.string.usernameoremail)) },
         colors = TextFieldDefaults.textFieldColors(
@@ -119,19 +123,19 @@ private fun UsernameComposable(viewModel: LoginViewModel) {
         keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done, keyboardType = KeyboardType.Text),
     )
-    viewModel.setUsername(username)
+    //viewModel.setUsername(username)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun PasswordComposable(viewModel: LoginViewModel) {
+private fun PasswordComposable(state: UiState, viewModel: MainViewModel) {
     var password by rememberSaveable { mutableStateOf("") }
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
 
     TextField(
-        value = password,
-        onValueChange = { password = it },
+        value = state.loginPassword,
+        onValueChange = { viewModel.onEvent(UiEvent.loginPasswordChanged(it))},
         shape = RoundedCornerShape(20.dp),
         label = { Text(stringResource(R.string.password)) },
         colors = TextFieldDefaults.textFieldColors(
@@ -153,38 +157,19 @@ private fun PasswordComposable(viewModel: LoginViewModel) {
             }
         }
     )
-    viewModel.setPassword(password)
 }
 
 @Composable
-private fun ButtonComposable(viewModel: LoginViewModel, navController: NavController) {
-    val myContext = LocalContext.current
-
+private fun ButtonComposable(viewModel: MainViewModel, navController: NavController) {
     Button(onClick = {
-        login(myContext, viewModel, navController)
+        viewModel.onEvent(UiEvent.login)
     }) {
         Text(text = "Login")
     }
 }
 
-private fun login(context: Context, viewModel: LoginViewModel, navController: NavController) {
-    if (viewModel.username.value.isEmpty()) {
-        Toast.makeText(context, context.getString(R.string.invalidusername), Toast.LENGTH_LONG).show()
-        return
-    }
-
-    viewModel.loginAccount(navController)
-
-    viewModel.viewModelScope.launch {
-        viewModel.message.collect { toastMessage ->
-            Toast.makeText(context, toastMessage, Toast.LENGTH_LONG).show()
-        }
-    }
-}
-
-
 @Composable
-private fun CreateAccountComposable(viewModel: LoginViewModel, navController: NavController) {
+private fun CreateAccountComposable(viewModel: MainViewModel, navController: NavController) {
     ClickableText(
         style = TextStyle(
             color = Color.Blue,
@@ -196,25 +181,20 @@ private fun CreateAccountComposable(viewModel: LoginViewModel, navController: Na
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun KeepMeLoggedInComposable(viewModel: LoginViewModel) {
-    val myContext = LocalContext.current
+private fun KeepMeLoggedInComposable(state: UiState, viewModel: MainViewModel) {
 
-    val checkedState = remember { mutableStateOf(false) }
+   // val checkedState = remember { mutableStateOf(false) }
 
     Row {
         Checkbox(
-            checked = checkedState.value,
+            checked = state.rememberMe,//state.rememberMe,
             modifier = Modifier,
-            onCheckedChange = { checkedState.value = it },
+            onCheckedChange = {
+                viewModel.onEvent(UiEvent.RememberMeChanged(it))},// onCheckedChange = { checkedState.value = it },
         )
-
         Text(text = "Keep me logged in", Modifier.padding(12.dp))
     }
 
-    //userPreferences.edit { prefs -> prefs[Keys.HIDE_VISITED] = hideVisited }
-   //viewModel.keepMeLoggedIn(userPreferences, checkedState.value)
-    viewModel.setRememberMe(checkedState.value)
-
+    //viewModel.setRememberMe(checkedState.value)
 }

@@ -13,11 +13,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
 import com.bura.chat.util.Screen
-import com.bura.chat.screens.viewmodel.ChatViewModel
+import com.bura.chat.screens.viewmodel.MainViewModel
 import com.bura.chat.ui.theme.ChatTheme
 
 @Composable
-fun ChatView(navController: NavController, viewModel: ChatViewModel) {
+fun ChatView(navController: NavController, viewModel: MainViewModel) {
     ChatTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),

@@ -22,18 +22,18 @@ class MainActivity : ComponentActivity() {
 
                 NavHost(navController, Screen.LoginScreen.name) {//starting destination
                     composable(Screen.LoginScreen.name) {
-                        val loginViewModel: LoginViewModel by viewModels()
-                        LoginView(navController, loginViewModel)
+                        val mainViewModel: MainViewModel by viewModels()
+                        LoginView(navController, mainViewModel)
                     }
 
                     composable(Screen.RegistrationScreen.name) {
-                        val registrationViewModel: RegistrationViewModel by viewModels()
-                        RegistrationView(navController, registrationViewModel)
+                        val mainViewModel: MainViewModel by viewModels()
+                        RegistrationView(navController, mainViewModel)
                     }
 
                     composable(Screen.ChatScreen.name) {
-                        val chatViewModel: ChatViewModel by viewModels()
-                        ChatView(navController, chatViewModel)
+                        val mainViewModel: MainViewModel by viewModels()
+                        ChatView(navController, mainViewModel)
                     }
 
                     composable(Screen.SettingsScreen.name) {
@@ -42,8 +42,8 @@ class MainActivity : ComponentActivity() {
                     }
 
                     composable(Screen.ProfileScreen.name) {
-                        val profileViewModel: ProfileViewModel by viewModels()
-                        ProfileView(navController, profileViewModel)
+                        val mainViewModel: MainViewModel by viewModels()
+                        ProfileView(navController, mainViewModel)
                     }
                     //composable(
                     //    "${Screen.UserScreen.name}/{username}",

@@ -11,11 +11,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,15 +29,46 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.bura.chat.R
+import com.bura.chat.screens.viewmodel.MainViewModel
 import com.bura.chat.util.Screen
 import com.bura.chat.util.TextComposable
 import com.bura.chat.util.isEmailValid
-import com.bura.chat.screens.viewmodel.RegistrationViewModel
+import com.bura.chat.screens.viewmodel.ui.UiEvent
+import com.bura.chat.screens.viewmodel.ui.UiResponse
+import com.bura.chat.screens.viewmodel.ui.UiState
 import com.bura.chat.ui.theme.ChatTheme
 import kotlinx.coroutines.launch
 
 @Composable
-fun RegistrationView(navController: NavController, viewModel: RegistrationViewModel) {
+fun RegistrationView(navController: NavController, viewModel: MainViewModel) {
+
+    val state = viewModel.uiState
+    val context = LocalContext.current
+
+    LaunchedEffect(viewModel, context) {
+
+        viewModel.uiResponse.collect {
+            if (viewModel.uiResponse.value == UiResponse.USERNAME_ERROR) {
+                Toast.makeText(context, R.string.invalidusername, Toast.LENGTH_LONG).show()
+                viewModel.setUiResponse(UiResponse.NULL)//required, otherwise it wouldn't collect the state on next occasion
+            }
+
+            if (viewModel.uiResponse.value == UiResponse.PASSWORD_ERROR) {
+                Toast.makeText(context, R.string.invalidpassword, Toast.LENGTH_LONG).show()
+                viewModel.setUiResponse(UiResponse.NULL)//required, otherwise it wouldn't collect the state on next occasion
+            }
+
+            if (viewModel.uiResponse.value == UiResponse.EMAIL_ERROR) {
+                Toast.makeText(context, R.string.invalidemail, Toast.LENGTH_LONG).show()
+                viewModel.setUiResponse(UiResponse.NULL)//required, otherwise it wouldn't collect the state on next occasion
+            }
+
+            if (viewModel.uiResponse.value == UiResponse.REGISTRATION_SUCCESS) {
+                Toast.makeText(context, R.string.registersuccess, Toast.LENGTH_LONG).show()
+                viewModel.setUiResponse(UiResponse.NULL)//required, otherwise it wouldn't collect the state on next occasion
+            }
+        }
+    }
 
     ChatTheme {
         Surface(
@@ -53,11 +81,11 @@ fun RegistrationView(navController: NavController, viewModel: RegistrationViewMo
             ) {
                 TextComposable(text = stringResource(R.string.registration))
                 Spacer(modifier = Modifier.height(20.dp))
-                EmailComposable(viewModel = viewModel)
+                EmailComposable(state,viewModel = viewModel)
                 Spacer(modifier = Modifier.height(20.dp))
-                UsernameComposable(viewModel = viewModel)
+                UsernameComposable(state,viewModel = viewModel)
                 Spacer(modifier = Modifier.height(20.dp))
-                PasswordComposable(viewModel = viewModel)
+                PasswordComposable(state,viewModel = viewModel)
                 Spacer(modifier = Modifier.height(40.dp))
                 ButtonComposable(viewModel = viewModel, navController = navController)
                 Spacer(modifier = Modifier.height(120.dp))
@@ -70,14 +98,14 @@ fun RegistrationView(navController: NavController, viewModel: RegistrationViewMo
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun UsernameComposable(viewModel: RegistrationViewModel) {
-    var username by rememberSaveable { mutableStateOf("") }
+private fun UsernameComposable(state: UiState, viewModel: MainViewModel) {
+    //var username by rememberSaveable { mutableStateOf("") }
     val focusManager = LocalFocusManager.current
 
     TextField(
         singleLine = true,
-        value = username,
-        onValueChange = { username = it },
+        value = state.registerUsername,
+        onValueChange = { viewModel.onEvent(UiEvent.registerUsernameChanged(it)) },
         shape = RoundedCornerShape(20.dp),
         label = { Text(stringResource(R.string.username)) },
         colors = TextFieldDefaults.textFieldColors(
@@ -87,19 +115,19 @@ private fun UsernameComposable(viewModel: RegistrationViewModel) {
         keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done, keyboardType = KeyboardType.Text),
     )
-    viewModel.setUsername(username)
+   // viewModel.setUsername(username)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun EmailComposable(viewModel: RegistrationViewModel) {
-    var email by rememberSaveable { mutableStateOf("") }
+private fun EmailComposable(state: UiState,viewModel: MainViewModel) {
+    //var email by rememberSaveable { mutableStateOf("") }
     val focusManager = LocalFocusManager.current
 
     TextField(
         singleLine = true,
-        value = email,
-        onValueChange = { email = it },
+        value = state.registerEmail,
+        onValueChange = { viewModel.onEvent(UiEvent.RegisterEmailChanged(it)) },
         shape = RoundedCornerShape(20.dp),
         label = { Text(stringResource(R.string.email)) },
         colors = TextFieldDefaults.textFieldColors(
@@ -109,20 +137,20 @@ private fun EmailComposable(viewModel: RegistrationViewModel) {
         keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done, keyboardType = KeyboardType.Email),
     )
-    viewModel.setEmail(email)
+    //viewModel.setEmail(email)
 }
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun PasswordComposable(viewModel: RegistrationViewModel) {
-    var password by rememberSaveable { mutableStateOf("") }
+private fun PasswordComposable(state: UiState,viewModel: MainViewModel) {
+    //var password by rememberSaveable { mutableStateOf("") }
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
 
     TextField(
-        value = password,
-        onValueChange = { password = it },
+        value = state.registerPassword,
+        onValueChange = { viewModel.onEvent(UiEvent.registerPasswordChanged(it)) },
         shape = RoundedCornerShape(20.dp),
         label = { Text(stringResource(R.string.password)) },
         colors = TextFieldDefaults.textFieldColors(
@@ -144,15 +172,16 @@ private fun PasswordComposable(viewModel: RegistrationViewModel) {
             }
         }
     )
-    viewModel.setPassword(password)
+    //viewModel.setPassword(password)
 }
 
 @Composable
-private fun ButtonComposable(viewModel: RegistrationViewModel, navController: NavController) {
+private fun ButtonComposable(viewModel: MainViewModel, navController: NavController) {
     val myContext = LocalContext.current
 
     Button(onClick = {
-        register(myContext, viewModel)
+        viewModel.onEvent(UiEvent.register)
+        //register(myContext, viewModel)
     }) {
         Text(text = stringResource(R.string.register))
     }
@@ -160,7 +189,7 @@ private fun ButtonComposable(viewModel: RegistrationViewModel, navController: Na
 
 
 @Composable
-private fun LoginAccountComposable(viewModel: RegistrationViewModel, navController: NavController) {
+private fun LoginAccountComposable(viewModel: MainViewModel, navController: NavController) {
     ClickableText(
         style = TextStyle(
             color = Color.Blue,
@@ -172,8 +201,8 @@ private fun LoginAccountComposable(viewModel: RegistrationViewModel, navControll
     )
 }
 
-
-private fun register(context: Context, viewModel: RegistrationViewModel){
+/*
+private fun register(context: Context, viewModel: MainViewModel){
     if (!viewModel.email.value.isEmailValid()) {
         Toast.makeText(context, context.getString(R.string.invalidemail), Toast.LENGTH_LONG).show()
         return
@@ -197,4 +226,6 @@ private fun register(context: Context, viewModel: RegistrationViewModel){
         }
     }
 }
+
+ */
 
