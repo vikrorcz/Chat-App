@@ -1,33 +1,31 @@
 package com.bura.chat.screens.viewmodel
 
-import android.util.Log
+import android.app.Application
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavController
 import com.bura.chat.data.UserPreferences
-import com.bura.chat.net.requests.LoginUser
 import com.bura.chat.net.RestClient
+import com.bura.chat.net.requests.LoginUser
 import com.bura.chat.net.requests.RegisterUser
 import com.bura.chat.screens.viewmodel.ui.UiEvent
 import com.bura.chat.screens.viewmodel.ui.UiResponse
 import com.bura.chat.screens.viewmodel.ui.UiState
-import com.bura.chat.util.Screen
 import com.bura.chat.util.isEmailValid
-import com.google.gson.JsonSyntaxException
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import retrofit2.HttpException
-import java.io.IOException
 
-class MainViewModel : ViewModel() {
 
-    lateinit var userPreferences: UserPreferences
+class MainViewModel(application: Application) : AndroidViewModel(application) {
+
+    private val userPreferences: UserPreferences = UserPreferences(getApplication())
 
     var uiState by mutableStateOf(UiState())
 
+    // TODO: how to do this better?
     private val _uiResponse = MutableStateFlow(UiResponse.NULL)
     val uiResponse = _uiResponse.asStateFlow()
 
@@ -35,10 +33,18 @@ class MainViewModel : ViewModel() {
         _uiResponse.value = uiResponse
     }
 
+    init {
+        if (userPreferences.getBooleanPref(UserPreferences.Prefs.rememberme)) {
+            autoLoginAccount()
+        }
+    }
+
     private fun loginAccount() {
 
         if (uiState.loginUsername.isEmpty()) {
             setUiResponse(uiResponse = UiResponse.USERNAME_ERROR)
+
+            //uiState = uiState.copy(UiResponse.USERNAME_ERROR)
             return
         }
 
@@ -67,7 +73,7 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    fun autoLoginAccount(navController: NavController) {
+    private fun autoLoginAccount() {
         viewModelScope.launch {
             val response = try {
                 val restClient = RestClient(userPreferences.getStringPref(UserPreferences.Prefs.token))
@@ -80,28 +86,26 @@ class MainViewModel : ViewModel() {
             if (response.isSuccessful && response.body() != null) {
                 println(response.body()!!.username)
                 userPreferences.setPref(UserPreferences.Prefs.username, response.body()!!.username)
-                navController.navigate(Screen.ChatScreen.name)
+                //navController.navigate(Screen.ChatScreen.name)
+                setUiResponse(UiResponse.LOGIN_SUCCESS)
 
             } else { setUiResponse(UiResponse.CONNECTION_FAIL) }
         }
     }
 
-    fun registerAccount() {
+    private fun registerAccount() {
         if (!uiState.registerEmail.isEmailValid()) {
             setUiResponse(UiResponse.EMAIL_ERROR)
-            //Toast.makeText(context, context.getString(R.string.invalidemail), Toast.LENGTH_LONG).show()
             return
         }
 
         if (uiState.registerUsername.isEmpty()) {
             setUiResponse(UiResponse.USERNAME_ERROR)
-            //Toast.makeText(context, context.getString(R.string.invalidusername), Toast.LENGTH_LONG).show()
             return
         }
 
         if (uiState.registerPassword.length < 5) {
             setUiResponse(UiResponse.PASSWORD_ERROR)
-            //Toast.makeText(context, context.getString(R.string.invalidpassword), Toast.LENGTH_LONG).show()
             return
         }
 
@@ -125,26 +129,29 @@ class MainViewModel : ViewModel() {
             is UiEvent.LoginUsernameChanged -> {
                 uiState = uiState.copy(loginUsername = event.value)
             }
-            is UiEvent.loginPasswordChanged -> {
+            is UiEvent.LoginPasswordChanged -> {
                 uiState = uiState.copy(loginPassword = event.value)
             }
-            is UiEvent.login -> {
+            is UiEvent.Login -> {
                 loginAccount()
             }
             is UiEvent.RegisterEmailChanged -> {
                 uiState = uiState.copy(registerEmail = event.value)
             }
-            is UiEvent.registerUsernameChanged -> {
+            is UiEvent.RegisterUsernameChanged -> {
                 uiState = uiState.copy(registerUsername = event.value)
             }
-            is UiEvent.registerPasswordChanged -> {
+            is UiEvent.RegisterPasswordChanged -> {
                 uiState = uiState.copy(registerPassword = event.value)
             }
             is UiEvent.RememberMeChanged -> {
                 uiState = uiState.copy(rememberMe = event.value)
             }
-            is UiEvent.register -> {
+            is UiEvent.Register -> {
                 registerAccount()
+            }
+            is  UiEvent.AlreadyHaveAnAccount -> {
+                setUiResponse(UiResponse.LOGIN_SCREEN)
             }
         }
     }

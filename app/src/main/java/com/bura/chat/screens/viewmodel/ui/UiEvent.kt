@@ -4,13 +4,14 @@ sealed class UiEvent {
 
     //Login Screen
     data class LoginUsernameChanged(val value: String): UiEvent()
-    data class loginPasswordChanged(val value: String): UiEvent()
+    data class LoginPasswordChanged(val value: String): UiEvent()
     data class RememberMeChanged(val value: Boolean): UiEvent()
-    object login: UiEvent()
+    object Login: UiEvent()
 
     //Register Screen
     data class RegisterEmailChanged(val value: String): UiEvent()
-    data class registerUsernameChanged(val value: String): UiEvent()
-    data class registerPasswordChanged(val value: String): UiEvent()
-    object register: UiEvent()
+    data class RegisterUsernameChanged(val value: String): UiEvent()
+    data class RegisterPasswordChanged(val value: String): UiEvent()
+    object Register: UiEvent()
+    object AlreadyHaveAnAccount: UiEvent()
 }
