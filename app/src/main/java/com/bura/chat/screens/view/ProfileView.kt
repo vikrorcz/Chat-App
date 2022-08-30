@@ -32,8 +32,6 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun ProfileView (navController: NavController, viewModel: MainViewModel) {
-
-
     ChatTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
@@ -84,10 +82,6 @@ private fun ToolBarComposable(navController: NavController) {
 
 @Composable
 private fun ProfileImageComposable() {
-    //IconButton(onClick = {  }) {
-    //    Icon(Icons.Default.AccountCircle, "",
-    //        modifier = Modifier.size(128.dp))
-    //}
     val image: Painter = painterResource(id = R.drawable.ic_launcher_background)
     Image(painter = image,contentDescription = "",
     modifier = Modifier

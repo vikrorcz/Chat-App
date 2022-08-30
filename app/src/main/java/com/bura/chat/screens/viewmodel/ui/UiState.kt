@@ -9,6 +9,8 @@ data class UiState(
     val registerPassword: String = "",
     val loginSuccessful: Boolean = false,
     val rememberMe: Boolean = false,
+    val settingsCurrentPassword: String= "",
+    val settingsNewPassword: String = ""
     //val uiResponse: UiResponse = UiResponse.NULL
     //val uiState: UiState
 )

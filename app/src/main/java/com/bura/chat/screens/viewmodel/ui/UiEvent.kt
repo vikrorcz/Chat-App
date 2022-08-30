@@ -14,4 +14,9 @@ sealed class UiEvent {
     data class RegisterPasswordChanged(val value: String): UiEvent()
     object Register: UiEvent()
     object AlreadyHaveAnAccount: UiEvent()
+
+    //Settings Screen
+    data class CurrentPasswordChanged(val value: String): UiEvent()
+    data class NewPasswordChanged(val value: String): UiEvent()
+    object ChangePassword: UiEvent()
 }

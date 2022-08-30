@@ -14,4 +14,6 @@
     <string name="invalidpassword">Password must contain at least 5 characters</string>
     <string name="connectionfail">Connection to server failed</string>
     <string name="registersuccess">Registration successful</string>
+    <string name="changepasswordsuccess">Password successfully changed</string>
+    <string name="changepasswordfail">Current password is invalid</string>
 </resources>

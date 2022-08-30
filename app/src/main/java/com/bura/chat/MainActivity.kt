@@ -14,6 +14,8 @@ import com.bura.chat.ui.theme.ChatTheme
 
 class MainActivity : ComponentActivity() {
 
+    private val mainViewModel: MainViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -22,27 +24,22 @@ class MainActivity : ComponentActivity() {
 
                 NavHost(navController, Screen.LoginScreen.name) {//starting destination
                     composable(Screen.LoginScreen.name) {
-                        val mainViewModel: MainViewModel by viewModels()
                         LoginView(navController, mainViewModel)
                     }
 
                     composable(Screen.RegistrationScreen.name) {
-                        val mainViewModel: MainViewModel by viewModels()
                         RegistrationView(navController, mainViewModel)
                     }
 
                     composable(Screen.ChatScreen.name) {
-                        val mainViewModel: MainViewModel by viewModels()
                         ChatView(navController, mainViewModel)
                     }
 
                     composable(Screen.SettingsScreen.name) {
-                        val settingsViewModel: SettingsViewModel by viewModels()
-                        SettingsView(navController, settingsViewModel)
+                        SettingsView(navController, mainViewModel)
                     }
 
                     composable(Screen.ProfileScreen.name) {
-                        val mainViewModel: MainViewModel by viewModels()
                         ProfileView(navController, mainViewModel)
                     }
                     //composable(

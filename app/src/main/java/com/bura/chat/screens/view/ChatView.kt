@@ -5,33 +5,37 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.Alignment
 
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+
 import androidx.navigation.NavController
 import com.bura.chat.util.Screen
 import com.bura.chat.screens.viewmodel.MainViewModel
 import com.bura.chat.ui.theme.ChatTheme
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatView(navController: NavController, viewModel: MainViewModel) {
+
     ChatTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background,
 
         ) {
-            ToolBarComposable(navController)
+            //ToolBarComposable(navController)
+            //FABComposable()
+            Scaffold(topBar = { ToolBarComposable(navController = navController) } ,
+                //floatingActionButtonPosition = FabPosition.End,
+                floatingActionButton = {
+                    FABComposable()
+                }, content = { } )
 
-            Column(modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment  =  Alignment.CenterHorizontally,
-            ) {
-               Text("Username: ")
-            }
         }
     }
 }
@@ -77,3 +81,19 @@ private fun ToolBarComposable(navController: NavController) {
         })
 }
 
+@Composable
+fun ContactItemComposable() {
+    Row {
+        Column {
+            Text(text = "CONTACT", style = typography.headlineMedium)
+            Text(text = "VIEW DETAIL", style = typography.titleSmall)
+        }
+    }
+}
+
+@Composable
+fun FABComposable() {
+    FloatingActionButton(onClick = { } ){
+        Icon(Icons.Filled.Add,"")
+    }
+}

@@ -6,10 +6,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.room.Room
 import com.bura.chat.data.UserPreferences
+import com.bura.chat.data.room.ContactDao
+import com.bura.chat.data.room.ContactDatabase
 import com.bura.chat.net.RestClient
 import com.bura.chat.net.requests.LoginUser
 import com.bura.chat.net.requests.RegisterUser
+import com.bura.chat.net.requests.UpdateUserPassword
 import com.bura.chat.screens.viewmodel.ui.UiEvent
 import com.bura.chat.screens.viewmodel.ui.UiResponse
 import com.bura.chat.screens.viewmodel.ui.UiState
@@ -22,6 +26,11 @@ import kotlinx.coroutines.launch
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private val userPreferences: UserPreferences = UserPreferences(getApplication())
+    private val roomDb: ContactDatabase = Room.databaseBuilder(
+        getApplication(),
+        ContactDatabase::class.java, "contact_database"
+    ).build()
+    private val contactDao: ContactDao = roomDb.contactDao()
 
     var uiState by mutableStateOf(UiState())
 
@@ -43,8 +52,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
         if (uiState.loginUsername.isEmpty()) {
             setUiResponse(uiResponse = UiResponse.USERNAME_ERROR)
-
-            //uiState = uiState.copy(UiResponse.USERNAME_ERROR)
             return
         }
 
@@ -86,7 +93,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             if (response.isSuccessful && response.body() != null) {
                 println(response.body()!!.username)
                 userPreferences.setPref(UserPreferences.Prefs.username, response.body()!!.username)
-                //navController.navigate(Screen.ChatScreen.name)
                 setUiResponse(UiResponse.LOGIN_SUCCESS)
 
             } else { setUiResponse(UiResponse.CONNECTION_FAIL) }
@@ -124,8 +130,33 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    private fun changePassword() {
+        viewModelScope.launch {
+            val response = try {
+                val restClient = RestClient("")
+                restClient.api.updatePassword(
+                    UpdateUserPassword(userPreferences.getStringPref(UserPreferences.Prefs.username),
+                        uiState.settingsCurrentPassword,
+                        uiState.settingsNewPassword))
+
+            } catch (e: Exception) {
+                setUiResponse(UiResponse.CONNECTION_FAIL)
+                return@launch
+            }
+
+            if (response.isSuccessful && response.body() != null) {
+                if (response.body()!!.message == "Current password is invalid") {
+                    setUiResponse(UiResponse.CHANGE_PASSWORD_FAIL)
+                    return@launch
+                }
+                setUiResponse(UiResponse.CHANGE_PASSWORD_SUCCESS)
+            }
+        }
+    }
+
     fun onEvent(event: UiEvent) {
         when(event) {
+            //=================================LOGIN SCREEN=========================================
             is UiEvent.LoginUsernameChanged -> {
                 uiState = uiState.copy(loginUsername = event.value)
             }
@@ -135,6 +166,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             is UiEvent.Login -> {
                 loginAccount()
             }
+
+            //=================================REGISTER SCREEN======================================
             is UiEvent.RegisterEmailChanged -> {
                 uiState = uiState.copy(registerEmail = event.value)
             }
@@ -152,6 +185,17 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }
             is  UiEvent.AlreadyHaveAnAccount -> {
                 setUiResponse(UiResponse.LOGIN_SCREEN)
+            }
+
+            //=================================SETTINGS SCREEN======================================
+            UiEvent.ChangePassword -> {
+                changePassword()
+            }
+            is UiEvent.CurrentPasswordChanged -> {
+                uiState = uiState.copy(settingsCurrentPassword = event.value)
+            }
+            is UiEvent.NewPasswordChanged -> {
+                uiState = uiState.copy(settingsNewPassword = event.value)
             }
         }
     }
