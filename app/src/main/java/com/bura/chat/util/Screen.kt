@@ -5,5 +5,7 @@ enum class Screen {
     RegistrationScreen,
     ChatScreen,
     SettingsScreen,
-    ProfileScreen
+    ProfileScreen,
+    ContactsScreen,
+    AddContactScreen
 }

@@ -1,4 +1,4 @@
-package com.bura.chat.screens.view
+package com.bura.chat.screens.screen
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
@@ -25,6 +25,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.bura.chat.R
 import com.bura.chat.screens.viewmodel.MainViewModel
@@ -35,31 +36,35 @@ import com.bura.chat.ui.theme.ChatTheme
 import com.bura.chat.util.TextComposable
 
 @Composable
-fun RegistrationView(navController: NavController, viewModel: MainViewModel) {
+fun RegistrationScreen(navController: NavController) {
 
+    val viewModel: MainViewModel = viewModel()
     val state = viewModel.uiState
     val context = LocalContext.current
 
     LaunchedEffect(viewModel, context) {
+        viewModel.uiResponse.collect { event ->
+            when (event) {
+                UiResponse.UsernameError -> {
+                    Toast.makeText(context, R.string.invalidusername, Toast.LENGTH_LONG).show()
+                }
 
-        viewModel.uiResponse.collect {
-            if (viewModel.uiResponse.value == UiResponse.USERNAME_ERROR) {
-                Toast.makeText(context, R.string.invalidusername, Toast.LENGTH_LONG).show()
-            }
+                UiResponse.PasswordError -> {
+                    Toast.makeText(context, R.string.invalidpassword, Toast.LENGTH_LONG).show()
+                }
 
-            if (viewModel.uiResponse.value == UiResponse.PASSWORD_ERROR) {
-                Toast.makeText(context, R.string.invalidpassword, Toast.LENGTH_LONG).show()
-            }
+                UiResponse.EmailError -> {
+                    Toast.makeText(context, R.string.invalidemail, Toast.LENGTH_LONG).show()
+                }
 
-            if (viewModel.uiResponse.value == UiResponse.EMAIL_ERROR) {
-                Toast.makeText(context, R.string.invalidemail, Toast.LENGTH_LONG).show()
-            }
+                UiResponse.RegistrationSuccess -> {
+                    Toast.makeText(context, R.string.registersuccess, Toast.LENGTH_LONG).show()
+                }
 
-            if (viewModel.uiResponse.value == UiResponse.REGISTRATION_SUCCESS) {
-                Toast.makeText(context, R.string.registersuccess, Toast.LENGTH_LONG).show()
+                else -> {}
             }
             //required, otherwise it wouldn't collect the state on next occasion
-            viewModel.setUiResponse(UiResponse.NULL)
+            viewModel.uiResponse.emit(UiResponse.Null)
         }
     }
 
@@ -80,9 +85,9 @@ fun RegistrationView(navController: NavController, viewModel: MainViewModel) {
                 Spacer(modifier = Modifier.height(20.dp))
                 PasswordComposable(state,viewModel = viewModel)
                 Spacer(modifier = Modifier.height(40.dp))
-                ButtonComposable(viewModel = viewModel, navController = navController)
+                ButtonComposable(onEvent = { viewModel.onEvent(UiEvent.Register) }, navController = navController)
                 Spacer(modifier = Modifier.height(120.dp))
-                LoginAccountComposable(viewModel = viewModel, navController)
+                LoginAccountComposable(onEvent = { viewModel.onEvent(UiEvent.AlreadyHaveAnAccount) }, navController)
             }
         }
     }
@@ -163,9 +168,9 @@ private fun PasswordComposable(state: UiState,viewModel: MainViewModel) {
 }
 
 @Composable
-private fun ButtonComposable(viewModel: MainViewModel, navController: NavController) {
+private fun ButtonComposable(onEvent: () -> Unit, navController: NavController) {
     Button(onClick = {
-        viewModel.onEvent(UiEvent.Register)
+        onEvent()
     }) {
         Text(text = stringResource(R.string.register))
     }
@@ -173,15 +178,14 @@ private fun ButtonComposable(viewModel: MainViewModel, navController: NavControl
 
 
 @Composable
-private fun LoginAccountComposable(viewModel: MainViewModel, navController: NavController) {
+private fun LoginAccountComposable(onEvent: () -> Unit, navController: NavController) {
     ClickableText(
         style = TextStyle(
             color = Color.Blue,
         ),
         text = AnnotatedString(stringResource(R.string.alreadyhaveacc)),
         onClick = {
-            viewModel.onEvent(UiEvent.AlreadyHaveAnAccount)
-
+            onEvent()
         }
     )
 }

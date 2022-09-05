@@ -1,4 +1,4 @@
-package com.bura.chat.screens.view
+package com.bura.chat.screens.screen
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
@@ -25,41 +25,51 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.bura.chat.R
-import com.bura.chat.data.UserPreferences
-import com.bura.chat.util.Screen
-import com.bura.chat.util.TextComposable
 import com.bura.chat.screens.viewmodel.MainViewModel
-import com.bura.chat.screens.viewmodel.ui.UiState
 import com.bura.chat.screens.viewmodel.ui.UiEvent
 import com.bura.chat.screens.viewmodel.ui.UiResponse
+import com.bura.chat.screens.viewmodel.ui.UiState
 import com.bura.chat.ui.theme.ChatTheme
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
+import com.bura.chat.util.Screen
+import com.bura.chat.util.TextComposable
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
-fun LoginView(navController: NavController, viewModel: MainViewModel) {
+fun LoginScreen(navController: NavController) {
 
+    val viewModel: MainViewModel = viewModel()
     val state = viewModel.uiState
     val context = LocalContext.current
 
     LaunchedEffect(viewModel, context) {
-        viewModel.uiResponse.collect {
-            if (viewModel.uiResponse.value == UiResponse.USERNAME_ERROR) {
-                Toast.makeText(context, R.string.invalidusername, Toast.LENGTH_LONG).show()
-            }
+        viewModel.uiResponse.collect { event ->
+            when (event) {
+                UiResponse.UsernameError -> {
+                    Toast.makeText(context, R.string.invalidusername, Toast.LENGTH_LONG).show()
+                }
 
-            if (viewModel.uiResponse.value == UiResponse.CONNECTION_FAIL) {
-                Toast.makeText(context, R.string.connectionfail, Toast.LENGTH_LONG).show()
-            }
+                UiResponse.ConnectionFail -> {
+                    Toast.makeText(context, R.string.connectionfail, Toast.LENGTH_LONG).show()
+                }
 
-            if (viewModel.uiResponse.value == UiResponse.LOGIN_SUCCESS) {
-                navController.navigate(Screen.ChatScreen.name)
+                UiResponse.TokenExpired -> {
+                    Toast.makeText(context, R.string.tokenexpired, Toast.LENGTH_LONG).show()
+                }
+
+                UiResponse.LoginSuccess -> {
+                    navController.navigate(Screen.ChatScreen.name)
+                }
+
+                UiResponse.InvalidCredentials -> {
+                    Toast.makeText(context, R.string.invalidcredentials, Toast.LENGTH_LONG).show()
+                }
+                else -> {}
             }
             //required, otherwise it wouldn't collect the state on next occasion
-            viewModel.setUiResponse(UiResponse.NULL)
+            viewModel.uiResponse.emit(UiResponse.Null)
         }
     }
 
@@ -75,15 +85,15 @@ fun LoginView(navController: NavController, viewModel: MainViewModel) {
 
                 TextComposable(text = stringResource(R.string.login))
                 Spacer(modifier = Modifier.height(20.dp))
-                UsernameComposable(state, viewModel = viewModel)
+                UsernameComposable(viewModel, state)
                 Spacer(modifier = Modifier.height(20.dp))
-                PasswordComposable(state, viewModel = viewModel)
+                PasswordComposable(viewModel, state)
                 Spacer(modifier = Modifier.height(40.dp))
-                KeepMeLoggedInComposable(state,viewModel)
+                KeepMeLoggedInComposable(viewModel, state)
                 Spacer(modifier = Modifier.height(20.dp))
-                ButtonComposable(viewModel = viewModel, navController = navController)
+                ButtonComposable(onEvent = { viewModel.onEvent(UiEvent.Login)  }, navController = navController)
                 Spacer(modifier = Modifier.height(120.dp))
-                CreateAccountComposable(viewModel = viewModel, navController)
+                CreateAccountComposable(navController)
             }
         }
     }
@@ -92,13 +102,13 @@ fun LoginView(navController: NavController, viewModel: MainViewModel) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun UsernameComposable(state: UiState, viewModel: MainViewModel) {
+private fun UsernameComposable(viewModel: MainViewModel,state: UiState) {
     val focusManager = LocalFocusManager.current
 
     TextField(
         singleLine = true,
         value = state.loginUsername,
-        onValueChange = { viewModel.onEvent(UiEvent.LoginUsernameChanged(it))},
+        onValueChange = { viewModel.onEvent(UiEvent.LoginUsernameChanged(it)) },
         shape = RoundedCornerShape(20.dp),
         label = { Text(stringResource(R.string.usernameoremail)) },
         colors = TextFieldDefaults.textFieldColors(
@@ -112,13 +122,13 @@ private fun UsernameComposable(state: UiState, viewModel: MainViewModel) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun PasswordComposable(state: UiState, viewModel: MainViewModel) {
+private fun PasswordComposable(viewModel: MainViewModel,state: UiState) {
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
 
     TextField(
         value = state.loginPassword,
-        onValueChange = { viewModel.onEvent(UiEvent.LoginPasswordChanged(it))},
+        onValueChange = { viewModel.onEvent(UiEvent.LoginPasswordChanged(it)) },
         shape = RoundedCornerShape(20.dp),
         label = { Text(stringResource(R.string.password)) },
         colors = TextFieldDefaults.textFieldColors(
@@ -143,16 +153,16 @@ private fun PasswordComposable(state: UiState, viewModel: MainViewModel) {
 }
 
 @Composable
-private fun ButtonComposable(viewModel: MainViewModel, navController: NavController) {
+private fun ButtonComposable(onEvent: () -> Unit, navController: NavController) {
     Button(onClick = {
-        viewModel.onEvent(UiEvent.Login)
+        onEvent()
     }) {
         Text(text = "Login")
     }
 }
 
 @Composable
-private fun CreateAccountComposable(viewModel: MainViewModel, navController: NavController) {
+private fun CreateAccountComposable(navController: NavController) {
     ClickableText(
         style = TextStyle(
             color = Color.Blue,
@@ -165,7 +175,7 @@ private fun CreateAccountComposable(viewModel: MainViewModel, navController: Nav
 }
 
 @Composable
-private fun KeepMeLoggedInComposable(state: UiState, viewModel: MainViewModel) {
+private fun KeepMeLoggedInComposable(viewModel: MainViewModel, state: UiState) {
     Row {
         Checkbox(
             checked = state.rememberMe,

@@ -7,7 +7,7 @@ import androidx.activity.viewModels
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.bura.chat.screens.view.*
+import com.bura.chat.screens.screen.*
 import com.bura.chat.util.Screen
 import com.bura.chat.screens.viewmodel.*
 import com.bura.chat.ui.theme.ChatTheme
@@ -24,23 +24,31 @@ class MainActivity : ComponentActivity() {
 
                 NavHost(navController, Screen.LoginScreen.name) {//starting destination
                     composable(Screen.LoginScreen.name) {
-                        LoginView(navController, mainViewModel)
+                        LoginScreen(navController)
                     }
 
                     composable(Screen.RegistrationScreen.name) {
-                        RegistrationView(navController, mainViewModel)
+                        RegistrationScreen(navController)
                     }
 
                     composable(Screen.ChatScreen.name) {
-                        ChatView(navController, mainViewModel)
+                        ChatScreen(navController)
                     }
 
                     composable(Screen.SettingsScreen.name) {
-                        SettingsView(navController, mainViewModel)
+                        SettingsScreen(navController)
                     }
 
                     composable(Screen.ProfileScreen.name) {
-                        ProfileView(navController, mainViewModel)
+                        ProfileScreen(navController)
+                    }
+
+                    composable(Screen.ContactsScreen.name) {
+                        ContactsScreen(navController)
+                    }
+
+                    composable(Screen.AddContactScreen.name) {
+                        AddContactScreen(navController)
                     }
                     //composable(
                     //    "${Screen.UserScreen.name}/{username}",

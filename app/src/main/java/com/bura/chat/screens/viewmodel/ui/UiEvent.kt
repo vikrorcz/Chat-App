@@ -19,4 +19,18 @@ sealed class UiEvent {
     data class CurrentPasswordChanged(val value: String): UiEvent()
     data class NewPasswordChanged(val value: String): UiEvent()
     object ChangePassword: UiEvent()
+
+    //Chat Screen
+    object Contacts: UiEvent()
+
+    //Contacts Screen
+    object AddContact: UiEvent()
+
+    //Profile Screen
+    object Logout: UiEvent()
+
+    //Add Contact Screen
+    data class AddContactChanged(val value: String): UiEvent()
+    object SearchUser: UiEvent()
+    data class AddUserContact(val user: SearchedUser): UiEvent()
 }

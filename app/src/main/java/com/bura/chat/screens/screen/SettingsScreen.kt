@@ -1,4 +1,4 @@
-package com.bura.chat.screens.view
+package com.bura.chat.screens.screen
 
 import android.annotation.SuppressLint
 import android.widget.Toast
@@ -7,7 +7,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -21,38 +23,42 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.bura.chat.R
 import com.bura.chat.screens.viewmodel.MainViewModel
-import com.bura.chat.util.Screen
 import com.bura.chat.screens.viewmodel.ui.UiEvent
 import com.bura.chat.screens.viewmodel.ui.UiResponse
 import com.bura.chat.screens.viewmodel.ui.UiState
 import com.bura.chat.ui.theme.ChatTheme
-import kotlinx.coroutines.launch
+import com.bura.chat.util.Screen
 
 @Composable
-fun SettingsView(navController: NavController, viewModel: MainViewModel) {
+fun SettingsScreen(navController: NavController) {
 
+    val viewModel: MainViewModel = viewModel()
     val state = viewModel.uiState
     val context = LocalContext.current
 
     LaunchedEffect(viewModel, context) {
-        viewModel.uiResponse.collect {
-            if (viewModel.uiResponse.value == UiResponse.CONNECTION_FAIL) {
-                Toast.makeText(context, R.string.connectionfail, Toast.LENGTH_LONG).show()
-            }
+        viewModel.uiResponse.collect { event ->
+            when (event) {
+                UiResponse.ConnectionFail -> {
+                    Toast.makeText(context, R.string.connectionfail, Toast.LENGTH_LONG).show()
+                }
 
-            if (viewModel.uiResponse.value == UiResponse.CHANGE_PASSWORD_SUCCESS) {
-                Toast.makeText(context, R.string.changepasswordsuccess, Toast.LENGTH_LONG).show()
-            }
+                UiResponse.ChangePasswordSuccess -> {
+                    Toast.makeText(context, R.string.changepasswordsuccess, Toast.LENGTH_LONG).show()
+                }
 
-            if (viewModel.uiResponse.value == UiResponse.CHANGE_PASSWORD_FAIL) {
-                Toast.makeText(context, R.string.changepasswordfail, Toast.LENGTH_LONG).show()
+                UiResponse.ChangePasswordFail -> {
+                    Toast.makeText(context, R.string.changepasswordfail, Toast.LENGTH_LONG).show()
+                }
+
+                else -> {}
             }
             //required, otherwise it wouldn't collect the state on next occasion
-            viewModel.setUiResponse(UiResponse.NULL)
+            viewModel.uiResponse.emit(UiResponse.Null)
         }
     }
 
@@ -75,7 +81,7 @@ fun SettingsView(navController: NavController, viewModel: MainViewModel) {
                 Spacer(modifier = Modifier.height(20.dp))
                 NewPasswordComposable(state, viewModel = viewModel)
                 Spacer(modifier = Modifier.height(20.dp))
-                ChangePasswordButtonComposable(viewModel = viewModel)
+                ChangePasswordButtonComposable(onEvent = { viewModel.onEvent(UiEvent.ChangePassword)} )
             }
 
         }
@@ -100,7 +106,7 @@ private fun ToolBarComposable(navController: NavController) {
                         Icon(Icons.Default.ArrowBack, "")
                     }
                 },
-                colors = TopAppBarDefaults.mediumTopAppBarColors(containerColor = Color.Green),
+                colors = TopAppBarDefaults.mediumTopAppBarColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
 
                 actions = {
 
@@ -176,9 +182,9 @@ private fun NewPasswordComposable(state: UiState, viewModel: MainViewModel) {
 }
 
 @Composable
-private fun ChangePasswordButtonComposable(viewModel: MainViewModel) {
+private fun ChangePasswordButtonComposable(onEvent: () -> Unit) {
     Button(onClick = {
-        viewModel.onEvent(UiEvent.ChangePassword)
+        onEvent()
     }) {
         Text(text = "Change password")
     }

@@ -16,4 +16,8 @@
     <string name="registersuccess">Registration successful</string>
     <string name="changepasswordsuccess">Password successfully changed</string>
     <string name="changepasswordfail">Current password is invalid</string>
+    <string name="tokenexpired">Authentication token expired please login again</string>
+    <string name="search">Search username or email</string>
+    <string name="usernotfound">The searched user does not exist</string>
+    <string name="invalidcredentials">Invalid credentials</string>
 </resources>

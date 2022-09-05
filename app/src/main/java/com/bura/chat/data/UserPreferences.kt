@@ -34,6 +34,5 @@ class UserPreferences(private val context: Context) {
     fun getStringPref(pref: Prefs): String {
         val sharedPref = context.getSharedPreferences("chat-prefs", Context.MODE_PRIVATE)
         return sharedPref.getString(pref.name, "")!!
-
     }
 }

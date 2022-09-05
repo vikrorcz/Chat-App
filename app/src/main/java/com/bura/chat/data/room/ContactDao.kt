@@ -8,7 +8,7 @@ interface ContactDao {
     fun insert(contact: Contact)
 
     @Query("SELECT * FROM contact_table")
-    fun getNoteList(): MutableList<Contact>
+    fun getContactList(): MutableList<Contact>
 
     @Delete
     fun delete(contact: Contact)

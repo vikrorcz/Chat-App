@@ -1,14 +1,37 @@
 package com.bura.chat.screens.viewmodel.ui
 
-enum class UiResponse {
-    LOGIN_SUCCESS,
-    USERNAME_ERROR,
-    NULL,
-    CONNECTION_FAIL,
-    REGISTRATION_SUCCESS,
-    EMAIL_ERROR,
-    PASSWORD_ERROR,
-    LOGIN_SCREEN,
-    CHANGE_PASSWORD_SUCCESS,
-    CHANGE_PASSWORD_FAIL
+sealed class UiResponse {
+    //responses from vm to ui
+
+    //Add Contact Screen
+    data class SearchUser(val user: SearchedUser): UiResponse()
+    object UserNotFound: UiResponse()
+
+    //Chat Screen
+    object NavigateContactScreen: UiResponse()
+
+    //Contacts Screen
+    object NavigateAddContactScreen: UiResponse()
+
+    //Login Screen
+    object UsernameError: UiResponse()
+    object ConnectionFail: UiResponse()
+    object TokenExpired: UiResponse()
+    object LoginSuccess: UiResponse()
+    object InvalidCredentials: UiResponse()
+
+    //Profile Screen
+    object NavigateLoginScreen: UiResponse()
+
+    //Registration Screen
+    object PasswordError: UiResponse()
+    object EmailError: UiResponse()
+    object RegistrationSuccess: UiResponse()
+
+    //Settings Screen
+    object ChangePasswordSuccess: UiResponse()
+    object ChangePasswordFail: UiResponse()
+
+    //for initialization
+    object Null: UiResponse()
 }
