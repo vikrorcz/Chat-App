@@ -8,6 +8,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.room.Room
 import com.bura.chat.data.UserPreferences
+import com.bura.chat.data.room.Contact
 import com.bura.chat.data.room.ContactDatabase
 import com.bura.chat.net.RestClient
 import com.bura.chat.net.requests.LoginUser
@@ -19,9 +20,7 @@ import com.bura.chat.screens.viewmodel.ui.UiEvent
 import com.bura.chat.screens.viewmodel.ui.UiResponse
 import com.bura.chat.screens.viewmodel.ui.UiState
 import com.bura.chat.util.isEmailValid
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
@@ -31,6 +30,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         getApplication(),
         ContactDatabase::class.java, "contact_database"
     ).build()
+
     private val contactDao = roomDb.contactDao()
 
     var uiState by mutableStateOf(UiState())
@@ -93,7 +93,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             if (response.isSuccessful && response.body() != null) {
                 userPreferences.setPref(UserPreferences.Prefs.username, response.body()!!.username)
                 uiResponse.emit(UiResponse.LoginSuccess)
-                //_autoLogin.value = true
 
             } else {
                 uiResponse.emit(UiResponse.TokenExpired)
@@ -184,6 +183,26 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    private suspend fun addContact(searchedUser: SearchedUser) {
+        with (contactDao) {
+            val contact = this.getContactByName(searchedUser.username)
+            if (contact != null) {
+                uiResponse.emit(UiResponse.ContactAlreadyAdded)
+                return
+            }
+
+            this.insert(Contact(0, searchedUser.username, searchedUser.email))
+        }
+    }
+
+    suspend fun getContactList(): MutableList<Contact> {
+        var list : MutableList<Contact>
+        with (contactDao) {
+            list = this.getContactList()
+        }
+        return list
+    }
+
     fun onEvent(event: UiEvent) {
         when (event) {
             //=================================LOGIN SCREEN=========================================
@@ -259,7 +278,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }
 
             is UiEvent.AddUserContact -> {
-                TODO()
+                viewModelScope.launch {
+                    addContact(event.user)
+                }
             }
         }
     }

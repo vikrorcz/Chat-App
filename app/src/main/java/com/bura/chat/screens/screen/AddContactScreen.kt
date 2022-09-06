@@ -66,8 +66,13 @@ fun AddContactScreen(navController: NavController) {
                     user.value = SearchedUser(username = event.user.username, email = event.user.email)
                     visible.value = true
                 }
+
                 UiResponse.UserNotFound -> {
                     Toast.makeText(context, com.bura.chat.R.string.usernotfound, Toast.LENGTH_LONG).show()
+                }
+
+                UiResponse.ContactAlreadyAdded -> {
+                    Toast.makeText(context, com.bura.chat.R.string.contactalreadyadded, Toast.LENGTH_LONG).show()
                 }
                 else -> {}
             }
@@ -101,7 +106,7 @@ private fun ToolBarComposable(viewModel: MainViewModel, state: UiState, navContr
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.navigate(
-                        Screen.ChatScreen.name) }) {
+                        Screen.ContactsScreen.name) }) {
                         Icon(Icons.Default.ArrowBack, "")
                     }
                 },

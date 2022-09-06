@@ -1,18 +1,22 @@
 package com.bura.chat.data.room
 
 import androidx.room.*
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ContactDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(contact: Contact)
+    suspend fun insert(contact: Contact)
 
     @Query("SELECT * FROM contact_table")
-    fun getContactList(): MutableList<Contact>
+    suspend fun getContactList(): MutableList<Contact>
+
+    @Query("SELECT * FROM contact_table WHERE username = :name")
+    suspend fun getContactByName(name: String) : Contact?
 
     @Delete
-    fun delete(contact: Contact)
+    suspend fun delete(contact: Contact)
 
     @Update
-    fun update(contact: Contact)
+    suspend fun update(contact: Contact)
 }

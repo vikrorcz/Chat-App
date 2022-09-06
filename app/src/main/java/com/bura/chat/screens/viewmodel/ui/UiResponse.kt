@@ -1,11 +1,14 @@
 package com.bura.chat.screens.viewmodel.ui
 
+import com.bura.chat.data.room.Contact
+
 sealed class UiResponse {
     //responses from vm to ui
 
     //Add Contact Screen
     data class SearchUser(val user: SearchedUser): UiResponse()
     object UserNotFound: UiResponse()
+    object ContactAlreadyAdded: UiResponse()
 
     //Chat Screen
     object NavigateContactScreen: UiResponse()

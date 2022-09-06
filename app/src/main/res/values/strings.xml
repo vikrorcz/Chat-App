@@ -20,4 +20,5 @@
     <string name="search">Search username or email</string>
     <string name="usernotfound">The searched user does not exist</string>
     <string name="invalidcredentials">Invalid credentials</string>
+    <string name="contactalreadyadded">Contact was already added</string>
 </resources>
