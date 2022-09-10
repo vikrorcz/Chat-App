@@ -21,4 +21,6 @@
     <string name="usernotfound">The searched user does not exist</string>
     <string name="invalidcredentials">Invalid credentials</string>
     <string name="contactalreadyadded">Contact was already added</string>
+    <string name="contactsuccessfullyadded">Contact successfully added</string>
+    <string name="cannotaddyourself">You cannot add yourself as a contact!</string>
 </resources>

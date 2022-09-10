@@ -74,6 +74,14 @@ fun AddContactScreen(navController: NavController) {
                 UiResponse.ContactAlreadyAdded -> {
                     Toast.makeText(context, com.bura.chat.R.string.contactalreadyadded, Toast.LENGTH_LONG).show()
                 }
+
+                UiResponse.ContactSuccessfullyAdded -> {
+                    Toast.makeText(context, com.bura.chat.R.string.contactsuccessfullyadded, Toast.LENGTH_LONG).show()
+                }
+
+                UiResponse.CannotAddYourself -> {
+                    Toast.makeText(context, com.bura.chat.R.string.cannotaddyourself, Toast.LENGTH_LONG).show()
+                }
                 else -> {}
             }
             //required, otherwise it wouldn't collect the state on next occasion

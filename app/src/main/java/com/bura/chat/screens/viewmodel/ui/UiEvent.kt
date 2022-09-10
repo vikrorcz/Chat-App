@@ -25,6 +25,7 @@ sealed class UiEvent {
 
     //Contacts Screen
     object AddContact: UiEvent()
+    data class DeleteUserContact(val name: String): UiEvent()
 
     //Profile Screen
     object Logout: UiEvent()

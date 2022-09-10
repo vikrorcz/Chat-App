@@ -33,6 +33,7 @@ import com.bura.chat.screens.viewmodel.ui.UiEvent
 import com.bura.chat.screens.viewmodel.ui.UiResponse
 import com.bura.chat.screens.viewmodel.ui.UiState
 import com.bura.chat.ui.theme.ChatTheme
+import com.bura.chat.util.Screen
 import com.bura.chat.util.TextComposable
 
 @Composable
@@ -61,6 +62,7 @@ fun RegistrationScreen(navController: NavController) {
                     Toast.makeText(context, R.string.registersuccess, Toast.LENGTH_LONG).show()
                 }
 
+
                 else -> {}
             }
             //required, otherwise it wouldn't collect the state on next occasion
@@ -87,7 +89,7 @@ fun RegistrationScreen(navController: NavController) {
                 Spacer(modifier = Modifier.height(40.dp))
                 ButtonComposable(onEvent = { viewModel.onEvent(UiEvent.Register) }, navController = navController)
                 Spacer(modifier = Modifier.height(120.dp))
-                LoginAccountComposable(onEvent = { viewModel.onEvent(UiEvent.AlreadyHaveAnAccount) }, navController)
+                LoginAccountComposable(viewModel, navController)
             }
         }
     }
@@ -178,14 +180,14 @@ private fun ButtonComposable(onEvent: () -> Unit, navController: NavController) 
 
 
 @Composable
-private fun LoginAccountComposable(onEvent: () -> Unit, navController: NavController) {
+private fun LoginAccountComposable(viewModel: MainViewModel, navController: NavController) {
     ClickableText(
         style = TextStyle(
             color = Color.Blue,
         ),
         text = AnnotatedString(stringResource(R.string.alreadyhaveacc)),
         onClick = {
-            onEvent()
+            navController.navigate(Screen.LoginScreen.name)
         }
     )
 }

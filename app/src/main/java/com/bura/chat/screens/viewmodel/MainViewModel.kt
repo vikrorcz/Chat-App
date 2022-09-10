@@ -186,12 +186,19 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private suspend fun addContact(searchedUser: SearchedUser) {
         with (contactDao) {
             val contact = this.getContactByName(searchedUser.username)
+
+            if (contact?.username == userPreferences.getStringPref(UserPreferences.Prefs.username)) {
+                uiResponse.emit(UiResponse.CannotAddYourself)
+                return
+            }
+
             if (contact != null) {
                 uiResponse.emit(UiResponse.ContactAlreadyAdded)
                 return
             }
 
             this.insert(Contact(0, searchedUser.username, searchedUser.email))
+            uiResponse.emit(UiResponse.ContactSuccessfullyAdded)
         }
     }
 
@@ -201,6 +208,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             list = this.getContactList()
         }
         return list
+    }
+
+    private suspend fun deleteContact(name: String) {
+        with (contactDao) {
+            val contact = this.getContactByName(name)
+            this.delete(contact!!)
+            uiResponse.emit(UiResponse.DeleteUserFromList(contact = contact))
+        }
     }
 
     fun onEvent(event: UiEvent) {
@@ -262,6 +277,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     uiResponse.emit(UiResponse.NavigateAddContactScreen)
                 }
             }
+
+            is UiEvent.DeleteUserContact -> {
+                viewModelScope.launch {
+                    deleteContact(event.name)
+                }
+            }
+
 
             //===================================PROFILE SCREEN=====================================
             UiEvent.Logout -> {

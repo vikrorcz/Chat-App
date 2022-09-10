@@ -2,17 +2,17 @@ package com.bura.chat.screens.screen
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -20,8 +20,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.bura.chat.R
@@ -31,7 +31,6 @@ import com.bura.chat.screens.viewmodel.ui.UiEvent
 import com.bura.chat.screens.viewmodel.ui.UiResponse
 import com.bura.chat.ui.theme.ChatTheme
 import com.bura.chat.util.Screen
-import kotlinx.coroutines.launch
 
 //SHOWS ALL CONTACTS + options to create group chat or add contact
 @Composable
@@ -53,6 +52,10 @@ fun ContactsScreen(navController: NavController) {
             when (event) {
                 UiResponse.NavigateAddContactScreen -> {
                     navController.navigate(Screen.AddContactScreen.name)
+                }
+
+                is UiResponse.DeleteUserFromList -> {
+                   contactList.remove(event.contact)
                 }
                 else -> {}
             }
@@ -129,6 +132,8 @@ private fun ToolBarComposable(navController: NavController) {
 
 @Composable
 private fun CardComposable(index: Int, viewModel: MainViewModel,text: String, id: Int){
+    var showMenu by rememberSaveable { mutableStateOf(false) }
+
     Card(modifier = Modifier
         .width(380.dp)
         .height(60.dp)
@@ -156,6 +161,28 @@ private fun CardComposable(index: Int, viewModel: MainViewModel,text: String, id
             Spacer(modifier = Modifier.height(5.dp))
             ContactImageComposable(id)
             Text(text, Modifier.padding(16.dp), textAlign = TextAlign.Center)
+
+
+            //for contact cards create a dropdown menu
+            if (index >= 0) {
+                Spacer(modifier = Modifier.weight(1f))//fill available space
+
+                IconButton(onClick = { showMenu = !showMenu }) {
+                    Icon(Icons.Default.List, "")
+                }
+
+                DropdownMenu(
+                    offset = DpOffset(x = (-10).dp, y = 0.dp),//offset position to locate menu on the right side
+                    expanded = showMenu,
+                    onDismissRequest = { showMenu = false }
+                ) {
+                    DropdownMenuItem(text = { Text(text = "Send message") }, onClick = { /*TODO*/})
+                    DropdownMenuItem(text = { Text(text = "Call") }, onClick = { /*TODO*/ })
+                    DropdownMenuItem(text = { Text(text = "Delete contact") }, onClick = {
+                        viewModel.onEvent(UiEvent.DeleteUserContact(text))
+                    })
+                }
+            }
         }
     }
 }

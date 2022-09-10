@@ -9,12 +9,15 @@ sealed class UiResponse {
     data class SearchUser(val user: SearchedUser): UiResponse()
     object UserNotFound: UiResponse()
     object ContactAlreadyAdded: UiResponse()
+    object ContactSuccessfullyAdded: UiResponse()
+    object CannotAddYourself: UiResponse()
 
     //Chat Screen
     object NavigateContactScreen: UiResponse()
 
     //Contacts Screen
     object NavigateAddContactScreen: UiResponse()
+    data class DeleteUserFromList(val contact: Contact): UiResponse()
 
     //Login Screen
     object UsernameError: UiResponse()
