@@ -68,6 +68,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     } else {
                         userPreferences.setPref(UserPreferences.Prefs.rememberme, false)
                     }
+                    userPreferences.setPref(UserPreferences.Prefs.username, uiState.loginUsername)
                     uiResponse.emit(UiResponse.LoginSuccess)
                 }
 
@@ -185,9 +186,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private suspend fun addContact(searchedUser: SearchedUser) {
         with (contactDao) {
-            val contact = this.getContactByName(searchedUser.username)
+            val contact = this.getContactByName(userPreferences.getStringPref(UserPreferences.Prefs.username), searchedUser.username)
 
-            if (contact?.username == userPreferences.getStringPref(UserPreferences.Prefs.username)) {
+            if (searchedUser.username == userPreferences.getStringPref(UserPreferences.Prefs.username)) {
                 uiResponse.emit(UiResponse.CannotAddYourself)
                 return
             }
@@ -197,7 +198,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 return
             }
 
-            this.insert(Contact(0, searchedUser.username, searchedUser.email))
+            this.insert(Contact(0, userPreferences.getStringPref(UserPreferences.Prefs.username), searchedUser.username, searchedUser.email))
             uiResponse.emit(UiResponse.ContactSuccessfullyAdded)
         }
     }
@@ -205,14 +206,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     suspend fun getContactList(): MutableList<Contact> {
         var list : MutableList<Contact>
         with (contactDao) {
-            list = this.getContactList()
+            list = this.getContactList(userPreferences.getStringPref(UserPreferences.Prefs.username))
         }
         return list
     }
 
     private suspend fun deleteContact(name: String) {
         with (contactDao) {
-            val contact = this.getContactByName(name)
+            val contact = this.getContactByName(userPreferences.getStringPref(UserPreferences.Prefs.username), name)
             this.delete(contact!!)
             uiResponse.emit(UiResponse.DeleteUserFromList(contact = contact))
         }

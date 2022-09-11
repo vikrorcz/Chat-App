@@ -8,9 +8,10 @@ import androidx.room.PrimaryKey
 data class Contact(
     @PrimaryKey(autoGenerate = true)
     var id: Int,
-    @ColumnInfo(name = "username")
+    @ColumnInfo(name = "user")//user who is currently using the app
+    var user:String,
+    @ColumnInfo(name = "username")//contact's username
     var username:String,
-    @ColumnInfo(name="email")
+    @ColumnInfo(name  = "email")//contact's email
     var email: String
-
 )
