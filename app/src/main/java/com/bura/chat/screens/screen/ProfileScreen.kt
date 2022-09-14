@@ -74,12 +74,11 @@ private fun ToolBarComposable(navController: NavController) {
         topBar = {
             SmallTopAppBar(
                 title = {
-                    //Text(text = "Profile")
-
+                    Text(text = "Profile")
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.navigate(
-                        Screen.ChatScreen.name) }) {
+                        Screen.RecentChatScreen.name) }) {
                         Icon(Icons.Default.ArrowBack, "")
                     }
                 },
@@ -89,8 +88,8 @@ private fun ToolBarComposable(navController: NavController) {
 
                 }
             )
-        }, content = {
-        })
+        }, content = { }
+    )
 }
 
 @Composable

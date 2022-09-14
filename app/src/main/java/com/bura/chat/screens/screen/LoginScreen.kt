@@ -60,7 +60,7 @@ fun LoginScreen(navController: NavController) {
                 }
 
                 UiResponse.LoginSuccess -> {
-                    navController.navigate(Screen.ChatScreen.name)
+                    navController.navigate(Screen.RecentChatScreen.name)
                 }
 
                 UiResponse.InvalidCredentials -> {

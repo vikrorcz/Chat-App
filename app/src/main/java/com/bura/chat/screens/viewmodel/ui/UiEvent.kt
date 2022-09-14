@@ -20,8 +20,11 @@ sealed class UiEvent {
     data class NewPasswordChanged(val value: String): UiEvent()
     object ChangePassword: UiEvent()
 
-    //Chat Screen
+    //Recent Chat Screen
     object Contacts: UiEvent()
+
+    //Chat Screen
+    data class MessageChanged(val value: String): UiEvent()
 
     //Contacts Screen
     object AddContact: UiEvent()

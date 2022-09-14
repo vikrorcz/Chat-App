@@ -3,10 +3,13 @@ package com.bura.chat
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.bura.chat.screens.screen.*
+import com.bura.chat.screens.viewmodel.MainViewModel
 import com.bura.chat.util.Screen
 import com.bura.chat.ui.theme.ChatTheme
 
@@ -27,8 +30,8 @@ class MainActivity : ComponentActivity() {
                         RegistrationScreen(navController)
                     }
 
-                    composable(Screen.ChatScreen.name) {
-                        ChatScreen(navController)
+                    composable(Screen.RecentChatScreen.name) {
+                        RecentChatScreen(navController)
                     }
 
                     composable(Screen.SettingsScreen.name) {
@@ -46,13 +49,13 @@ class MainActivity : ComponentActivity() {
                     composable(Screen.AddContactScreen.name) {
                         AddContactScreen(navController)
                     }
-                    //composable(
-                    //    "${Screen.UserScreen.name}/{username}",
-                    //    arguments = listOf(navArgument("username") { type = NavType.StringType })
-                    //) { backStackEntry ->
-                    //    val viewModel = UserViewModel(backStackEntry.arguments?.getString("username") ?: "")
-                    //    UserView(navController, viewModel)
-                    //}
+
+                    composable(
+                        "${Screen.ChatScreen.name}/{title}",
+                        arguments = listOf(navArgument("title") { type = NavType.StringType })
+                    ) { backStackEntry ->
+                        ChatScreen(navController, backStackEntry.arguments?.getString("title") ?: "", )
+                    }
                 }
             }
         }

@@ -102,7 +102,7 @@ private fun ToolBarComposable(navController: NavController) {
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.navigate(
-                        Screen.ChatScreen.name) }) {
+                        Screen.RecentChatScreen.name) }) {
                         Icon(Icons.Default.ArrowBack, "")
                     }
                 },
@@ -112,8 +112,7 @@ private fun ToolBarComposable(navController: NavController) {
 
                 }
             )
-        }, content = {
-        }
+        }, content = { }
     )
 }
 

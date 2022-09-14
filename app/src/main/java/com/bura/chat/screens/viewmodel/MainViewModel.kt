@@ -19,6 +19,7 @@ import com.bura.chat.screens.viewmodel.ui.SearchedUser
 import com.bura.chat.screens.viewmodel.ui.UiEvent
 import com.bura.chat.screens.viewmodel.ui.UiResponse
 import com.bura.chat.screens.viewmodel.ui.UiState
+import com.bura.chat.util.MyWebSocketListener
 import com.bura.chat.util.isEmailValid
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -32,6 +33,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     ).build()
 
     private val contactDao = roomDb.contactDao()
+
+    private val listener = MyWebSocketListener()
+
+    private val ws = listener.client.newWebSocket(listener.request, listener)
 
     var uiState by mutableStateOf(UiState())
 
@@ -52,9 +57,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }
 
             val response = try {
-                val restClient = RestClient(userPreferences.getStringPref(UserPreferences.Prefs.token))
+                val restClient = RestClient()//userPreferences.getStringPref(UserPreferences.Prefs.token))
                 restClient.api.loginUser(LoginUser(uiState.loginUsername, uiState.loginPassword))
             } catch (e: Exception) {
+                println(e.message)
+                //failed to connect to /192.168.254.39 (port 8080) from /192.168.232.2 (port 47442) after 10000ms
                 uiResponse.emit(UiResponse.ConnectionFail)
                 return@launch
             }
@@ -219,6 +226,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun sendMessage(message: String) {
+        ws.send(message)
+    }
+
     fun onEvent(event: UiEvent) {
         when (event) {
             //=================================LOGIN SCREEN=========================================
@@ -265,11 +276,16 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 uiState = uiState.copy(settingsNewPassword = event.value)
             }
 
-            //===================================CHAT SCREEN========================================
+            //=================================RECENT CHAT SCREEN===================================
             UiEvent.Contacts -> {
                 viewModelScope.launch {
                     uiResponse.emit(UiResponse.NavigateContactScreen)
                 }
+            }
+
+            //================================== CHAT SCREEN========================================
+            is UiEvent.MessageChanged -> {
+                uiState = uiState.copy(message = event.value)
             }
 
             //==================================CONTACTS SCREEN=====================================
@@ -284,7 +300,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     deleteContact(event.name)
                 }
             }
-
 
             //===================================PROFILE SCREEN=====================================
             UiEvent.Logout -> {

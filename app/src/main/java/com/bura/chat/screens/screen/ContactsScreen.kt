@@ -1,6 +1,7 @@
 package com.bura.chat.screens.screen
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -33,6 +34,7 @@ import com.bura.chat.ui.theme.ChatTheme
 import com.bura.chat.util.Screen
 
 //SHOWS ALL CONTACTS + options to create group chat or add contact
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ContactsScreen(navController: NavController) {
 
@@ -81,6 +83,7 @@ fun ContactsScreen(navController: NavController) {
                 CardComposable(
                     -2,
                     viewModel,
+                    navController,
                     "Add a new contact",
                     R.drawable.ic_baseline_person_add_24
                 )
@@ -90,14 +93,16 @@ fun ContactsScreen(navController: NavController) {
                 CardComposable(
                     -1,
                     viewModel,
+                    navController,
                     "Add a new group",
                     R.drawable.ic_baseline_group_add_24
                 )
 
                 LazyColumn {
-                    items(contactList) { data ->
+                    items(contactList) { //data ->
                         Spacer(modifier = Modifier.height(5.dp))
-                        CardComposable(data.id, viewModel, text = data.username, id = R.drawable.ic_baseline_person_24)
+                        //Modifier.animateItemPlacement() todo animate the list when inserting or removing contact
+                        CardComposable(it.id, viewModel,  navController, text = it.username, id = R.drawable.ic_baseline_person_24)
                     }
                 }
             }
@@ -117,7 +122,7 @@ private fun ToolBarComposable(navController: NavController) {
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.navigate(
-                        Screen.ChatScreen.name) }) {
+                        Screen.RecentChatScreen.name) }) {
                         Icon(Icons.Default.ArrowBack, "")
                     }
                 },
@@ -127,11 +132,13 @@ private fun ToolBarComposable(navController: NavController) {
 
                 }
             )
-        }, content = { })
+        }, content = { }
+    )
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun CardComposable(index: Int, viewModel: MainViewModel,text: String, id: Int){
+private fun CardComposable(index: Int, viewModel: MainViewModel, navController: NavController, text: String, id: Int){
     var showMenu by rememberSaveable { mutableStateOf(false) }
 
     Card(modifier = Modifier
@@ -151,7 +158,7 @@ private fun CardComposable(index: Int, viewModel: MainViewModel,text: String, id
                 }
 
                 else -> {
-                    println("you clicked $text")
+                    navController.navigate("${Screen.ChatScreen.name}/${text}")
                 }
             }
         }) {

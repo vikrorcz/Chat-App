@@ -11,5 +11,6 @@ data class UiState(
     val rememberMe: Boolean = false,
     val settingsCurrentPassword: String= "",
     val settingsNewPassword: String = "",
-    val addNewContact: String = ""
+    val addNewContact: String = "",
+    val message: String = ""
 )

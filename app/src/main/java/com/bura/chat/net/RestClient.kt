@@ -10,7 +10,7 @@ class RestClient(token: String) {
 
     constructor(): this("")
 
-    private val BASE_URL: String = "http://192.168.254.39:8080/"
+    private val BASE_URL: String = "http://192.168.254.38:8080/"
 
     private val gson = GsonBuilder()
        .setLenient()

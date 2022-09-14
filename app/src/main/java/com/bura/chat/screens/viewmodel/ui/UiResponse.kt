@@ -12,7 +12,7 @@ sealed class UiResponse {
     object ContactSuccessfullyAdded: UiResponse()
     object CannotAddYourself: UiResponse()
 
-    //Chat Screen
+    //Recent Chat Screen
     object NavigateContactScreen: UiResponse()
 
     //Contacts Screen
@@ -37,6 +37,8 @@ sealed class UiResponse {
     //Settings Screen
     object ChangePasswordSuccess: UiResponse()
     object ChangePasswordFail: UiResponse()
+
+    //Chat Screen
 
     //for initialization
     object Null: UiResponse()
