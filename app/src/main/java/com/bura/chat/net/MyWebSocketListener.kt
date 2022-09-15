@@ -1,5 +1,7 @@
-package com.bura.chat.util
+package com.bura.chat.net
 
+import com.bura.chat.net.websocket.ChatMessage
+import com.google.gson.Gson
 import okhttp3.*
 import okio.ByteString
 import java.util.concurrent.TimeUnit

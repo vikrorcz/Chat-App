@@ -1,6 +1,5 @@
 package com.bura.chat.net
 
-import com.bura.chat.util.TokenInterceptor
 import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit

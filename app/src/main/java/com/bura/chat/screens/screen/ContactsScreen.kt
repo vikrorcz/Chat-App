@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -142,7 +143,8 @@ private fun CardComposable(index: Int, viewModel: MainViewModel, navController: 
     var showMenu by rememberSaveable { mutableStateOf(false) }
 
     Card(modifier = Modifier
-        .width(380.dp)
+        //.width(380.dp)
+        .width(LocalConfiguration.current.screenWidthDp.dp - 10.dp)
         .height(60.dp)
         .clickable {
 

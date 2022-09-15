@@ -3,11 +3,13 @@ package com.bura.chat
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.bura.chat.net.websocket.ChatMessage
 import com.bura.chat.screens.screen.*
 import com.bura.chat.screens.viewmodel.MainViewModel
 import com.bura.chat.util.Screen
@@ -15,8 +17,15 @@ import com.bura.chat.ui.theme.ChatTheme
 
 class MainActivity : ComponentActivity() {
 
+    // TODO: verify correct -> move to loginviewmodel
+    private val mainViewModel: MainViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // TODO: verify correct -> move to loginviewmodel
+        mainViewModel.connectToChat()
+
         setContent {
             ChatTheme {
                 val navController = rememberNavController()
@@ -59,5 +68,12 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+
+    // TODO: verify correct
+    override fun onDestroy() {
+        mainViewModel.webSocket.close(1000, "End of session")
+        super.onDestroy()
     }
 }

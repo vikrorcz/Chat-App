@@ -25,6 +25,7 @@ sealed class UiEvent {
 
     //Chat Screen
     data class MessageChanged(val value: String): UiEvent()
+    data class SendMessage(val value: String): UiEvent()
 
     //Contacts Screen
     object AddContact: UiEvent()

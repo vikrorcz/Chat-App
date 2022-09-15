@@ -6,23 +6,32 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.room.Room
 import com.bura.chat.data.UserPreferences
 import com.bura.chat.data.room.Contact
 import com.bura.chat.data.room.ContactDatabase
+import com.bura.chat.net.MyWebSocketListener
 import com.bura.chat.net.RestClient
 import com.bura.chat.net.requests.LoginUser
 import com.bura.chat.net.requests.RegisterUser
 import com.bura.chat.net.requests.SearchUser
 import com.bura.chat.net.requests.UpdateUserPassword
+import com.bura.chat.net.websocket.ChatMessage
 import com.bura.chat.screens.viewmodel.ui.SearchedUser
 import com.bura.chat.screens.viewmodel.ui.UiEvent
 import com.bura.chat.screens.viewmodel.ui.UiResponse
 import com.bura.chat.screens.viewmodel.ui.UiState
-import com.bura.chat.util.MyWebSocketListener
 import com.bura.chat.util.isEmailValid
+import com.google.gson.Gson
+import com.google.gson.JsonObject
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
+import okio.ByteString
+import okio.ByteString.Companion.decodeHex
+import org.json.JSONObject
+
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -36,7 +45,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private val listener = MyWebSocketListener()
 
-    private val ws = listener.client.newWebSocket(listener.request, listener)
+    val webSocket = listener.client.newWebSocket(listener.request, listener)
 
     var uiState by mutableStateOf(UiState())
 
@@ -44,6 +53,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val uiResponse = MutableStateFlow<UiResponse>(UiResponse.Null)
 
     init {
+        //Connect to chat and start receiving websockets
+        // TODO: https://stackoverflow.com/questions/71666792/viewmodel-instantiated-in-compose-with-hiltviewmodel-called-multiple-times
+        // TODO: FIX -> create multiple viewmodels and call connectToChat() only once in LoginViewModel
+        //connectToChat()
+
         if (userPreferences.getBooleanPref(UserPreferences.Prefs.rememberme)) {
             autoLoginAccount()
         }
@@ -57,11 +71,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }
 
             val response = try {
-                val restClient = RestClient()//userPreferences.getStringPref(UserPreferences.Prefs.token))
+                val restClient = RestClient()
                 restClient.api.loginUser(LoginUser(uiState.loginUsername, uiState.loginPassword))
             } catch (e: Exception) {
                 println(e.message)
-                //failed to connect to /192.168.254.39 (port 8080) from /192.168.232.2 (port 47442) after 10000ms
                 uiResponse.emit(UiResponse.ConnectionFail)
                 return@launch
             }
@@ -226,8 +239,26 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun sendMessage(message: String) {
-        ws.send(message)
+    private fun sendMessage(receivingUser: String) {
+        println("Sending message")
+        // TODO: error on client side, 1 message is sent after 2 button clicks
+        val message = ChatMessage(
+            userPreferences.getStringPref(UserPreferences.Prefs.username),
+            receivingUser,
+            uiState.message
+        )
+        val jsonObject = Gson().toJson(message)
+        webSocket.send(jsonObject)
+    }
+
+    fun connectToChat() {
+        val message = ChatMessage(
+            userPreferences.getStringPref(UserPreferences.Prefs.username),
+            "",
+            ""
+        )
+        val jsonObject = Gson().toJson(message)
+        webSocket.send(jsonObject)
     }
 
     fun onEvent(event: UiEvent) {
@@ -286,6 +317,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             //================================== CHAT SCREEN========================================
             is UiEvent.MessageChanged -> {
                 uiState = uiState.copy(message = event.value)
+            }
+
+            is UiEvent.SendMessage -> {
+                sendMessage(event.value)
             }
 
             //==================================CONTACTS SCREEN=====================================

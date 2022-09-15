@@ -30,6 +30,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.bura.chat.R
+import com.bura.chat.net.websocket.ChatMessage
 import com.bura.chat.screens.viewmodel.MainViewModel
 import com.bura.chat.screens.viewmodel.ui.UiEvent
 import com.bura.chat.screens.viewmodel.ui.UiResponse
@@ -88,7 +89,8 @@ private fun ToolBarComposable(title: String, state: UiState, viewModel: MainView
                     SendMessageComposable(viewModel = viewModel, state = state)
                     Spacer(modifier = Modifier.weight(1f))
                     IconButton(onClick = {
-                        viewModel.sendMessage(viewModel.uiState.message)
+                        viewModel.onEvent(UiEvent.SendMessage(title))
+                    //viewModel.sendMessage(title)
                     }) {
                         Icon(Icons.Default.Send, "")
                     }
@@ -97,7 +99,7 @@ private fun ToolBarComposable(title: String, state: UiState, viewModel: MainView
         },
 
         topBar = {
-            SmallTopAppBar(
+            TopAppBar(
                 title = {
                     Text(text = title)
 
