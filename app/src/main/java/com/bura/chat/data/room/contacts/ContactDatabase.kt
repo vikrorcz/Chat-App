@@ -1,4 +1,4 @@
-package com.bura.chat.data.room
+package com.bura.chat.data.room.contacts
 
 import androidx.room.Database
 import androidx.room.RoomDatabase

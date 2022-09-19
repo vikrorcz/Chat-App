@@ -3,9 +3,9 @@ package com.bura.chat
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.bura.chat.data.room.Contact
-import com.bura.chat.data.room.ContactDao
-import com.bura.chat.data.room.ContactDatabase
+import com.bura.chat.data.room.contacts.Contact
+import com.bura.chat.data.room.contacts.ContactDao
+import com.bura.chat.data.room.contacts.ContactDatabase
 import kotlinx.coroutines.runBlocking
 import com.google.common.truth.Truth.assertThat
 import org.junit.After

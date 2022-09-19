@@ -6,11 +6,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.room.Room
 import com.bura.chat.data.UserPreferences
-import com.bura.chat.data.room.Contact
-import com.bura.chat.data.room.ContactDatabase
+import com.bura.chat.data.room.contacts.Contact
+import com.bura.chat.data.room.contacts.ContactDatabase
+import com.bura.chat.data.room.messages.Message
+import com.bura.chat.data.room.messages.MessageDatabase
 import com.bura.chat.net.MyWebSocketListener
 import com.bura.chat.net.RestClient
 import com.bura.chat.net.requests.LoginUser
@@ -24,26 +25,28 @@ import com.bura.chat.screens.viewmodel.ui.UiResponse
 import com.bura.chat.screens.viewmodel.ui.UiState
 import com.bura.chat.util.isEmailValid
 import com.google.gson.Gson
-import com.google.gson.JsonObject
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
-import okio.ByteString
-import okio.ByteString.Companion.decodeHex
-import org.json.JSONObject
 
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val userPreferences = UserPreferences(getApplication())
-    private val roomDb = Room.databaseBuilder(
+    val userPreferences = UserPreferences(getApplication())
+    private val contactDb = Room.databaseBuilder(
         getApplication(),
         ContactDatabase::class.java, "contact_database"
     ).build()
 
-    private val contactDao = roomDb.contactDao()
+    private val contactDao = contactDb.contactDao()
 
-    private val listener = MyWebSocketListener()
+    private val messageDb = Room.databaseBuilder(
+        getApplication(),
+        MessageDatabase::class.java, "message_database"
+    ).build()
+
+    val messageDao = messageDb.messageDao()
+
+    private val listener = MyWebSocketListener(this)
 
     val webSocket = listener.client.newWebSocket(listener.request, listener)
 
@@ -231,6 +234,20 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         return list
     }
 
+    suspend fun getMessageListFromSender(sendingUser: String): MutableList<Message> {
+        var receivedMessagesList : MutableList<Message>//Messages sent by the other user
+        var sentMessagesList: MutableList<Message>//Messages sent by the user
+        with (messageDao) {
+            receivedMessagesList = this.getMessageListFromSender(sendingUser, userPreferences.getStringPref(UserPreferences.Prefs.username))
+            sentMessagesList = this.getMessageListFromSender(userPreferences.getStringPref(UserPreferences.Prefs.username), sendingUser)
+        }
+
+        receivedMessagesList.addAll(sentMessagesList)
+        receivedMessagesList.sortBy { it.id }
+
+        return receivedMessagesList
+    }
+
     private suspend fun deleteContact(name: String) {
         with (contactDao) {
             val contact = this.getContactByName(userPreferences.getStringPref(UserPreferences.Prefs.username), name)
@@ -239,16 +256,50 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+
+    // TODO: bug jozin cant send message to viktor, but viktor can send to jozin
+    //    java.io.EOFException
+    //    at okio.RealBufferedSource.require(RealBufferedSource.kt:199)
+    //    at okio.RealBufferedSource.readByte(RealBufferedSource.kt:209)
+    //    at okhttp3.internal.ws.WebSocketReader.readHeader(WebSocketReader.kt:119)
+    //    at okhttp3.internal.ws.WebSocketReader.processNextFrame(WebSocketReader.kt:102)
+    //    at okhttp3.internal.ws.RealWebSocket.loopReader(RealWebSocket.kt:293)
+    //    at okhttp3.internal.ws.RealWebSocket$connect$1.onResponse(RealWebSocket.kt:195)
+    //    at okhttp3.internal.connection.RealCall$AsyncCall.run(RealCall.kt:519)
+    //    at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1167)
+    //    at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:641)
     private fun sendMessage(receivingUser: String) {
-        println("Sending message")
-        // TODO: error on client side, 1 message is sent after 2 button clicks
-        val message = ChatMessage(
+        try {
+            val chatMessage = ChatMessage(
+                userPreferences.getStringPref(UserPreferences.Prefs.username),
+                receivingUser,
+                uiState.message
+            )
+            val jsonObject = Gson().toJson(chatMessage)
+            webSocket.send(jsonObject)
+
+            viewModelScope.launch {
+                val message = Message(0, chatMessage.message, chatMessage.username, chatMessage.receivingUsername)
+                with (messageDao) {
+                    this.insert(message)
+                }
+                uiResponse.emit(UiResponse.AddMessageToList(message = message))
+            }
+            println("Message successfully sent")
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    fun disconnectFromChat() {
+        val chatMessage = ChatMessage(
             userPreferences.getStringPref(UserPreferences.Prefs.username),
-            receivingUser,
-            uiState.message
+            "",
+            "disconnect"
         )
-        val jsonObject = Gson().toJson(message)
+        val jsonObject = Gson().toJson(chatMessage)
         webSocket.send(jsonObject)
+        //webSocket.close(1000, "End of session")
     }
 
     fun connectToChat() {

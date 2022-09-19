@@ -1,7 +1,6 @@
-package com.bura.chat.data.room
+package com.bura.chat.data.room.contacts
 
 import androidx.room.*
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ContactDao {

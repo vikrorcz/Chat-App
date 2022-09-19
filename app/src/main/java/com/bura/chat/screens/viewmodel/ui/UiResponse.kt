@@ -1,6 +1,7 @@
 package com.bura.chat.screens.viewmodel.ui
 
-import com.bura.chat.data.room.Contact
+import com.bura.chat.data.room.contacts.Contact
+import com.bura.chat.data.room.messages.Message
 
 sealed class UiResponse {
     //responses from vm to ui
@@ -39,6 +40,7 @@ sealed class UiResponse {
     object ChangePasswordFail: UiResponse()
 
     //Chat Screen
+    data class AddMessageToList(val message: Message): UiResponse()
 
     //for initialization
     object Null: UiResponse()

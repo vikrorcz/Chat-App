@@ -1,12 +1,19 @@
 package com.bura.chat.net
 
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.bura.chat.data.room.messages.Message
+import com.bura.chat.data.room.messages.MessageDao
 import com.bura.chat.net.websocket.ChatMessage
+import com.bura.chat.screens.viewmodel.MainViewModel
+import com.bura.chat.screens.viewmodel.ui.UiResponse
 import com.google.gson.Gson
+import kotlinx.coroutines.launch
 import okhttp3.*
 import okio.ByteString
 import java.util.concurrent.TimeUnit
 
-class MyWebSocketListener: WebSocketListener() {
+class MyWebSocketListener(val viewModel: MainViewModel): WebSocketListener() {
 
     private val statusCode = 1000
 
@@ -37,24 +44,43 @@ class MyWebSocketListener: WebSocketListener() {
     }
 
     override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
-        t.printStackTrace()
+        println("onFailure: ${t.message}")
+        println("onFailure: ${t.printStackTrace()}")
         super.onFailure(webSocket, t, response)
     }
 
     override fun onMessage(webSocket: WebSocket, text: String) {
-        println("MESSAGE: $text");
+        println("Received message: $text");
+
+        val messageDeserialized = Gson().fromJson(text, ChatMessage::class.java)
+
+        val message = Message(
+            0,
+            sendingUser = messageDeserialized.username,
+            receivingUser = messageDeserialized.receivingUsername,
+            message = messageDeserialized.message
+        )
+
+        viewModel.viewModelScope.launch {
+            with (viewModel.messageDao) {
+                this.insert(message)
+            }
+            viewModel.uiResponse.emit(UiResponse.AddMessageToList(message = message))
+        }
         super.onMessage(webSocket, text)
     }
 
-    override fun onMessage(webSocket: WebSocket, bytes: ByteString) {
-        println("MESSAGE: ${bytes.hex()}");
-        super.onMessage(webSocket, bytes)
-    }
+    //override fun onMessage(webSocket: WebSocket, bytes: ByteString) {
+    //    println("MESSAGE: ${bytes.hex()}");
+    //    super.onMessage(webSocket, bytes)
+    //}
 
     override fun onOpen(webSocket: WebSocket, response: Response) {
         //webSocket.send("Hello message")
-        //webSocket.close(STATUS_CODE, "End of chat")
+        //webSocket.close(statusCode, "End of chat")
 
         super.onOpen(webSocket, response)
     }
+
+
 }

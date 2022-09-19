@@ -1,4 +1,4 @@
-package com.bura.chat.data.room
+package com.bura.chat.data.room.contacts
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -12,6 +12,7 @@ data class Contact(
     var user:String,
     @ColumnInfo(name = "username")//contact's username
     var username:String,
-    @ColumnInfo(name  = "email")//contact's email
+    @ColumnInfo(name = "email")//contact's email
     var email: String
 )
+

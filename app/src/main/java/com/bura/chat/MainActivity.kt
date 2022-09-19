@@ -9,11 +9,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.bura.chat.data.UserPreferences
 import com.bura.chat.net.websocket.ChatMessage
 import com.bura.chat.screens.screen.*
 import com.bura.chat.screens.viewmodel.MainViewModel
 import com.bura.chat.util.Screen
 import com.bura.chat.ui.theme.ChatTheme
+import com.google.gson.Gson
 
 class MainActivity : ComponentActivity() {
 
@@ -73,7 +75,7 @@ class MainActivity : ComponentActivity() {
 
     // TODO: verify correct
     override fun onDestroy() {
-        mainViewModel.webSocket.close(1000, "End of session")
+        mainViewModel.disconnectFromChat()
         super.onDestroy()
     }
 }

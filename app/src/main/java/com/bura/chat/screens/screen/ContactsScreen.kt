@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.bura.chat.R
-import com.bura.chat.data.room.Contact
+import com.bura.chat.data.room.contacts.Contact
 import com.bura.chat.screens.viewmodel.MainViewModel
 import com.bura.chat.screens.viewmodel.ui.UiEvent
 import com.bura.chat.screens.viewmodel.ui.UiResponse
