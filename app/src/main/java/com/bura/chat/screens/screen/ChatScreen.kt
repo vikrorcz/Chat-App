@@ -31,6 +31,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
@@ -66,6 +67,8 @@ fun ChatScreen(navController: NavController, title: String,) {
     LaunchedEffect(viewModel, context) {
 
         messageList.addAll(viewModel.getMessageListFromSender(title))
+        listState.scrollToItem(messageList.size)
+
 
         viewModel.uiResponse.collect { event ->
             when (event) {
@@ -79,6 +82,9 @@ fun ChatScreen(navController: NavController, title: String,) {
             viewModel.uiResponse.emit(UiResponse.Null)
         }
     }
+
+    //enables to receive messages and automatically display them
+    viewModel.connectToChat()
 
     ChatTheme {
         Surface(
@@ -117,7 +123,6 @@ private fun ToolBarComposable(title: String, state: UiState, viewModel: MainView
     Scaffold(
         bottomBar = {
             BottomAppBar(
-
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
 
                 actions = {
@@ -125,7 +130,6 @@ private fun ToolBarComposable(title: String, state: UiState, viewModel: MainView
                     Spacer(modifier = Modifier.weight(1f))
                     IconButton(onClick = {
                         viewModel.onEvent(UiEvent.SendMessage(title))
-                    //viewModel.sendMessage(title)
                     }) {
                         Icon(Icons.Default.Send, "")
                     }
@@ -177,22 +181,32 @@ private fun SendMessageComposable(viewModel: MainViewModel,state: UiState) {
 
 
 @Composable
-private fun CardComposable(text: String, sender: String, user: String){
-    val arrangement: Arrangement.Horizontal = if (sender == user) {
-        Arrangement.End
-    } else {
-        Arrangement.Start
+private fun CardComposable(text: String, sender: String, user: String) {
+    //offset messages sent by the user to the right
+    var contentAlignment = Alignment.CenterStart
+    var background = MaterialTheme.colorScheme.primaryContainer
+    if (sender == user) {
+        contentAlignment = Alignment.CenterEnd
+        background = com.bura.chat.ui.theme.OwnMessageColor
     }
-    Card(modifier = Modifier
-        .width(LocalConfiguration.current.screenWidthDp.dp / 2f)
-        .height(60.dp)
-
-    ) {
-        Row(modifier = Modifier.fillMaxSize(),
-            horizontalArrangement = arrangement,
-            verticalAlignment = Alignment.CenterVertically) {
-            Spacer(modifier = Modifier.height(5.dp))
-            Text(text, Modifier.padding(16.dp), textAlign = TextAlign.Center)
+    Box(
+        contentAlignment = contentAlignment,
+        modifier = Modifier.fillMaxWidth()) {
+        Card(
+            modifier = Modifier
+                .width(IntrinsicSize.Max)
+                .wrapContentWidth(),
+            colors = CardDefaults.cardColors(
+                containerColor = background,
+            ),
+        ) {
+            Row(modifier = Modifier.fillMaxSize(),
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Spacer(modifier = Modifier.height(5.dp))
+                Text(text, Modifier.padding(16.dp), textAlign = TextAlign.Center, overflow = TextOverflow.Ellipsis)
+            }
         }
     }
 }

@@ -299,7 +299,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         )
         val jsonObject = Gson().toJson(chatMessage)
         webSocket.send(jsonObject)
-        //webSocket.close(1000, "End of session")
+        webSocket.close(1000, "End of session")
     }
 
     fun connectToChat() {
@@ -310,6 +310,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         )
         val jsonObject = Gson().toJson(message)
         webSocket.send(jsonObject)
+    }
+
+    fun getRecentContactsList() {
+
     }
 
     fun onEvent(event: UiEvent) {
