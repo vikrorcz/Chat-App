@@ -1,7 +1,6 @@
-package com.bura.chat.screens.screen
+package com.bura.chat.screens.contacts
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -24,25 +23,20 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.bura.chat.R
 import com.bura.chat.data.room.contacts.Contact
-import com.bura.chat.screens.viewmodel.MainViewModel
-import com.bura.chat.screens.viewmodel.ui.UiEvent
-import com.bura.chat.screens.viewmodel.ui.UiResponse
+import com.bura.chat.util.UiResponse
 import com.bura.chat.ui.theme.ChatTheme
 import com.bura.chat.util.Screen
 import org.koin.androidx.compose.getViewModel
 
 //SHOWS ALL CONTACTS + options to create group chat or add contact
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ContactsScreen(navController: NavController) {
 
-    //val viewModel: MainViewModel = viewModel()
-    val viewModel = getViewModel<MainViewModel>()
-    val state = viewModel.uiState
+    val viewModel = getViewModel<ContactsViewModel>()
+    //val state = viewModel.state
     val context = LocalContext.current
 
     val contactList = remember {
@@ -119,7 +113,7 @@ fun ContactsScreen(navController: NavController) {
 private fun ToolBarComposable(navController: NavController) {
     Scaffold(
         topBar = {
-            SmallTopAppBar(
+            TopAppBar(
                 title = {
                     Text(text = "Contacts")
                 },
@@ -139,9 +133,8 @@ private fun ToolBarComposable(navController: NavController) {
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun CardComposable(index: Int, viewModel: MainViewModel, navController: NavController, text: String, id: Int){
+private fun CardComposable(index: Int, viewModel: ContactsViewModel, navController: NavController, text: String, id: Int){
     var showMenu by rememberSaveable { mutableStateOf(false) }
 
     Card(modifier = Modifier
@@ -152,7 +145,7 @@ private fun CardComposable(index: Int, viewModel: MainViewModel, navController: 
 
             when (index) {
                 -2 -> {
-                    viewModel.onEvent(UiEvent.AddContact)
+                    viewModel.onEvent(ContactsEvent.AddContact)
                     println("you clicked $text")
                 }
 
@@ -190,7 +183,7 @@ private fun CardComposable(index: Int, viewModel: MainViewModel, navController: 
                     DropdownMenuItem(text = { Text(text = "Send message") }, onClick = { /*TODO*/})
                     DropdownMenuItem(text = { Text(text = "Call") }, onClick = { /*TODO*/ })
                     DropdownMenuItem(text = { Text(text = "Delete contact") }, onClick = {
-                        viewModel.onEvent(UiEvent.DeleteUserContact(text))
+                        viewModel.onEvent(ContactsEvent.DeleteUserContact(text))
                     })
                 }
             }

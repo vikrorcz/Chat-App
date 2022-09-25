@@ -1,4 +1,4 @@
-package com.bura.chat.screens.screen.register
+package com.bura.chat.screens.register
 
 data class RegisterState(
     val registerUsername: String = "",

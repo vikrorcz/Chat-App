@@ -1,4 +1,4 @@
-package com.bura.chat.screens.screen.profile
+package com.bura.chat.screens.profile
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
@@ -20,7 +20,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavController
 import com.bura.chat.R
-import com.bura.chat.screens.viewmodel.ui.UiResponse
+import com.bura.chat.util.UiResponse
 import com.bura.chat.ui.theme.ChatTheme
 import com.bura.chat.util.Screen
 import org.koin.androidx.compose.getViewModel

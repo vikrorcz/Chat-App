@@ -1,4 +1,4 @@
-package com.bura.chat.screens.screen.chat
+package com.bura.chat.screens.chat
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
@@ -28,10 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.bura.chat.R
 import com.bura.chat.data.room.messages.Message
-import com.bura.chat.screens.viewmodel.MainViewModel
-import com.bura.chat.screens.viewmodel.ui.UiEvent
-import com.bura.chat.screens.viewmodel.ui.UiResponse
-import com.bura.chat.screens.viewmodel.ui.UiState
+import com.bura.chat.util.UiResponse
 import com.bura.chat.ui.theme.ChatTheme
 import com.bura.chat.util.Screen
 import org.koin.androidx.compose.getViewModel
@@ -39,10 +36,9 @@ import org.koin.androidx.compose.getViewModel
 @Composable
 fun ChatScreen(navController: NavController, title: String) {
 
-    //val viewModel: MainViewModel = viewModel()
-    val viewModel = getViewModel<MainViewModel>()
+    val viewModel = getViewModel<ChatViewModel>()
     val context = LocalContext.current
-    val state = viewModel.uiState
+    val state = viewModel.state
 
     val listState = rememberLazyListState()
 
@@ -67,8 +63,6 @@ fun ChatScreen(navController: NavController, title: String) {
             viewModel.uiResponse.emit(UiResponse.Null)
         }
     }
-
-    viewModel.connectToChat()
 
     ChatTheme {
         Surface(
@@ -103,7 +97,7 @@ fun ChatScreen(navController: NavController, title: String) {
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ToolBarComposable(title: String, state: UiState, viewModel: MainViewModel,navController: NavController) {
+private fun ToolBarComposable(title: String, state: ChatState, viewModel: ChatViewModel,navController: NavController) {
     Scaffold(
         bottomBar = {
             BottomAppBar(
@@ -113,7 +107,7 @@ private fun ToolBarComposable(title: String, state: UiState, viewModel: MainView
                     SendMessageComposable(viewModel = viewModel, state = state)
                     Spacer(modifier = Modifier.weight(1f))
                     IconButton(onClick = {
-                        viewModel.onEvent(UiEvent.SendMessage(title))
+                        viewModel.onEvent(ChatEvent.SendMessage(title))
                     }) {
                         Icon(Icons.Default.Send, "")
                     }
@@ -145,13 +139,13 @@ private fun ToolBarComposable(title: String, state: UiState, viewModel: MainView
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun SendMessageComposable(viewModel: MainViewModel,state: UiState) {
+private fun SendMessageComposable(viewModel: ChatViewModel,state: ChatState) {
     val focusManager = LocalFocusManager.current
 
     TextField(
         singleLine = true,
         value = state.message,
-        onValueChange = { viewModel.onEvent(UiEvent.MessageChanged(it)) },
+        onValueChange = { viewModel.onEvent(ChatEvent.MessageChanged(it)) },
         shape = RoundedCornerShape(20.dp),
         label = { Text(stringResource(R.string.sendmessage)) },
         colors = TextFieldDefaults.textFieldColors(

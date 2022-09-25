@@ -1,4 +1,4 @@
-package com.bura.chat.screens.screen.settings
+package com.bura.chat.screens.settings
 
 import android.annotation.SuppressLint
 import android.widget.Toast
@@ -25,11 +25,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.bura.chat.R
-import com.bura.chat.screens.screen.register.RegisterViewModel
-import com.bura.chat.screens.viewmodel.MainViewModel
-import com.bura.chat.screens.viewmodel.ui.UiEvent
-import com.bura.chat.screens.viewmodel.ui.UiResponse
-import com.bura.chat.screens.viewmodel.ui.UiState
+import com.bura.chat.util.UiResponse
 import com.bura.chat.ui.theme.ChatTheme
 import com.bura.chat.util.Screen
 import org.koin.androidx.compose.getViewModel

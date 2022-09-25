@@ -1,4 +1,4 @@
-package com.bura.chat.screens.screen.addcontact
+package com.bura.chat.screens.addcontact
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -11,10 +11,8 @@ import com.bura.chat.net.RestClient
 import com.bura.chat.net.requests.SearchUser
 import com.bura.chat.repository.ContactRepository
 import com.bura.chat.repository.UserPrefsRepository
-import com.bura.chat.screens.viewmodel.ui.SearchedUser
-import com.bura.chat.screens.viewmodel.ui.UiEvent
-import com.bura.chat.screens.viewmodel.ui.UiResponse
-import com.bura.chat.screens.viewmodel.ui.UiState
+import com.bura.chat.data.SearchedUser
+import com.bura.chat.util.UiResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 

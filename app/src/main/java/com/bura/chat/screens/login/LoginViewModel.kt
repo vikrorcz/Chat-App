@@ -1,4 +1,4 @@
-package com.bura.chat.screens.screen.login
+package com.bura.chat.screens.login
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -10,9 +10,7 @@ import com.bura.chat.net.MyWebSocketListener
 import com.bura.chat.net.RestClient
 import com.bura.chat.net.requests.LoginUser
 import com.bura.chat.repository.UserPrefsRepository
-import com.bura.chat.screens.viewmodel.ui.UiEvent
-import com.bura.chat.screens.viewmodel.ui.UiResponse
-import com.bura.chat.screens.viewmodel.ui.UiState
+import com.bura.chat.util.UiResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 

@@ -1,6 +1,4 @@
-package com.bura.chat.screens.screen.profile
-
-import com.bura.chat.screens.viewmodel.ui.UiEvent
+package com.bura.chat.screens.profile
 
 sealed class ProfileEvent {
     object Logout: ProfileEvent()

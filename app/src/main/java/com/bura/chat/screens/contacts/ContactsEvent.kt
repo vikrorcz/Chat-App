@@ -1,4 +1,6 @@
 package com.bura.chat.screens.contacts
 
-class ContactsEvent {
+sealed class ContactsEvent {
+    object AddContact: ContactsEvent()
+    data class DeleteUserContact(val name: String): ContactsEvent()
 }

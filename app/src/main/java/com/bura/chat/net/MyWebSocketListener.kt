@@ -1,19 +1,17 @@
 package com.bura.chat.net
 
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bura.chat.data.room.messages.Message
-import com.bura.chat.data.room.messages.MessageDao
 import com.bura.chat.net.websocket.ChatMessage
-import com.bura.chat.screens.viewmodel.MainViewModel
-import com.bura.chat.screens.viewmodel.ui.UiResponse
+import com.bura.chat.screens.chat.ChatViewModel
+import com.bura.chat.util.UiResponse
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
 import okhttp3.*
-import okio.ByteString
 import java.util.concurrent.TimeUnit
 
-class MyWebSocketListener(val viewModel: MainViewModel): WebSocketListener() {
+class MyWebSocketListener(val viewModel: ViewModel): WebSocketListener() {
 
     private val statusCode = 1000
 
@@ -62,10 +60,10 @@ class MyWebSocketListener(val viewModel: MainViewModel): WebSocketListener() {
         )
 
         viewModel.viewModelScope.launch {
-            with (viewModel.messageDao) {
-                this.insert(message)
+            if (viewModel is ChatViewModel) {
+                viewModel.messageRepository.insert(message)
+                viewModel.uiResponse.emit(UiResponse.AddMessageToList(message = message))
             }
-            viewModel.uiResponse.emit(UiResponse.AddMessageToList(message = message))
         }
         super.onMessage(webSocket, text)
     }

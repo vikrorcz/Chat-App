@@ -1,6 +1,6 @@
-package com.bura.chat.screens.screen.addcontact
+package com.bura.chat.screens.addcontact
 
-import com.bura.chat.screens.viewmodel.ui.SearchedUser
+import com.bura.chat.data.SearchedUser
 
 sealed class AddContactEvent {
     data class AddContactChanged(val value: String): AddContactEvent()

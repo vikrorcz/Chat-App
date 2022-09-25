@@ -1,5 +1,6 @@
-package com.bura.chat.screens.screen.chat
+package com.bura.chat.screens.chat
 
-class ChatState {
+data class ChatState(
     val message: String = ""
-}
+)
+

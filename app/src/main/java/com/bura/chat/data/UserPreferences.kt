@@ -2,7 +2,7 @@ package com.bura.chat.data
 
 import android.content.Context
 
-class UserPreferences(private val context: Context) {
+interface UserPreferences {//(private val context: Context) {
 
     enum class Prefs {
         rememberme,
@@ -10,6 +10,15 @@ class UserPreferences(private val context: Context) {
         token
     }
 
+    fun setPref(pref: Prefs,boolean: Boolean)
+
+    fun setPref(pref: Prefs,string: String)
+
+    fun getBooleanPref(pref: Prefs): Boolean
+
+    fun getStringPref(pref: Prefs): String
+
+    /*
     fun setPref(pref: Prefs,boolean: Boolean) {
         val sharedPref = context.getSharedPreferences("chat-prefs", Context.MODE_PRIVATE) ?: return
         with (sharedPref.edit()) {
@@ -35,4 +44,5 @@ class UserPreferences(private val context: Context) {
         val sharedPref = context.getSharedPreferences("chat-prefs", Context.MODE_PRIVATE)
         return sharedPref.getString(pref.name, "")!!
     }
+    */
 }

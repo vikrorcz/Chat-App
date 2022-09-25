@@ -1,6 +1,4 @@
-package com.bura.chat.screens.screen.login
-
-import com.bura.chat.screens.viewmodel.ui.UiEvent
+package com.bura.chat.screens.login
 
 sealed  class LoginEvent {
     data class LoginUsernameChanged(val value: String): LoginEvent()

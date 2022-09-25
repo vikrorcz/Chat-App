@@ -3,30 +3,26 @@ package com.bura.chat
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.bura.chat.data.UserPreferences
-import com.bura.chat.net.websocket.ChatMessage
-import com.bura.chat.screens.screen.*
-import com.bura.chat.screens.viewmodel.MainViewModel
+import com.bura.chat.screens.addcontact.AddContactScreen
+import com.bura.chat.screens.chat.ChatScreen
+import com.bura.chat.screens.contacts.ContactsScreen
+import com.bura.chat.screens.login.LoginScreen
+import com.bura.chat.screens.profile.ProfileScreen
+import com.bura.chat.screens.recentchat.RecentChatScreen
+import com.bura.chat.screens.register.RegistrationScreen
+import com.bura.chat.screens.settings.SettingsScreen
 import com.bura.chat.util.Screen
 import com.bura.chat.ui.theme.ChatTheme
-import com.google.gson.Gson
 
 class MainActivity : ComponentActivity() {
 
-    // TODO: verify correct -> move to loginviewmodel
-    private val mainViewModel: MainViewModel by viewModels()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // TODO: verify correct -> move to loginviewmodel
-        mainViewModel.connectToChat()
 
         setContent {
             ChatTheme {
@@ -70,12 +66,5 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-    }
-
-
-    // TODO: verify correct
-    override fun onDestroy() {
-        mainViewModel.disconnectFromChat()
-        super.onDestroy()
     }
 }

@@ -1,24 +1,18 @@
-package com.bura.chat.screens.screen
+package com.bura.chat.screens.recentchat
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Message
 import androidx.compose.material3.*
-import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.bura.chat.screens.viewmodel.MainViewModel
-import com.bura.chat.screens.viewmodel.ui.UiEvent
-import com.bura.chat.screens.viewmodel.ui.UiResponse
+import com.bura.chat.util.UiResponse
 import com.bura.chat.ui.theme.ChatTheme
 import com.bura.chat.util.Screen
 import org.koin.androidx.compose.getViewModel
@@ -31,8 +25,8 @@ import org.koin.androidx.compose.getViewModel
 fun RecentChatScreen(navController: NavController) {
 
     //val viewModel: MainViewModel = viewModel()
-    val viewModel = getViewModel<MainViewModel>()
-    val state = viewModel.uiState
+    val viewModel = getViewModel<RecentChatViewModel>()
+    //val state = viewModel.state
     val context = LocalContext.current
 
     LaunchedEffect(viewModel, context) {
@@ -57,7 +51,7 @@ fun RecentChatScreen(navController: NavController) {
 
             Scaffold(topBar = { ToolBarComposable(navController = navController) } ,
                 floatingActionButton = {
-                    FABComposable(onEvent = { viewModel.onEvent(UiEvent.Contacts) })
+                    FABComposable(onEvent = { viewModel.onEvent(RecentChatEvent.Contacts) })
                 }, content = { } )
 
         }
@@ -72,7 +66,7 @@ private fun ToolBarComposable(navController: NavController) {
 
     Scaffold(
         topBar = {
-            SmallTopAppBar(
+            TopAppBar(
                 title = {
                     Text(text = "Chat")
                 },

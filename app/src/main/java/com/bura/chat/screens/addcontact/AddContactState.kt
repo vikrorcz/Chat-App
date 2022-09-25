@@ -1,4 +1,4 @@
-package com.bura.chat.screens.screen.addcontact
+package com.bura.chat.screens.addcontact
 
 data class AddContactState(
     val addNewContact: String = "",

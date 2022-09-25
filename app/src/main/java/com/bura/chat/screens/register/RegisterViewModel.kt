@@ -1,4 +1,4 @@
-package com.bura.chat.screens.screen.register
+package com.bura.chat.screens.register
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -7,10 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bura.chat.net.RestClient
 import com.bura.chat.net.requests.RegisterUser
-import com.bura.chat.repository.UserPrefsRepository
-import com.bura.chat.screens.viewmodel.ui.UiEvent
-import com.bura.chat.screens.viewmodel.ui.UiResponse
-import com.bura.chat.screens.viewmodel.ui.UiState
+import com.bura.chat.util.UiResponse
 import com.bura.chat.util.isEmailValid
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch

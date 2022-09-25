@@ -1,4 +1,5 @@
 package com.bura.chat.screens.recentchat
 
-class RecentChatEvenet {
+sealed class RecentChatEvent {
+    object Contacts: RecentChatEvent()
 }

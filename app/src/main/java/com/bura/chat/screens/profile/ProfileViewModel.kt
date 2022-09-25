@@ -1,15 +1,10 @@
-package com.bura.chat.screens.screen.profile
+package com.bura.chat.screens.profile
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bura.chat.data.UserPreferences
 import com.bura.chat.repository.UserPrefsRepository
-import com.bura.chat.screens.viewmodel.ui.UiEvent
-import com.bura.chat.screens.viewmodel.ui.UiResponse
-import com.bura.chat.screens.viewmodel.ui.UiState
+import com.bura.chat.util.UiResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 

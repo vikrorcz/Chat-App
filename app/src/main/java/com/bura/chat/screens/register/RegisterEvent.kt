@@ -1,6 +1,4 @@
-package com.bura.chat.screens.screen.register
-
-import com.bura.chat.screens.viewmodel.ui.UiEvent
+package com.bura.chat.screens.register
 
 sealed class RegisterEvent {
     data class RegisterEmailChanged(val value: String): RegisterEvent()

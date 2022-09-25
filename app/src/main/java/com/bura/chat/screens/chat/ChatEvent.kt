@@ -1,4 +1,6 @@
 package com.bura.chat.screens.chat
 
-class ChatEvent {
+sealed class ChatEvent {
+    data class MessageChanged(val value: String): ChatEvent()
+    data class SendMessage(val value: String): ChatEvent()
 }

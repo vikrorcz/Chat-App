@@ -1,4 +1,4 @@
-package com.bura.chat.screens.screen.login
+package com.bura.chat.screens.login
 
 data class LoginState(
     val loginUsername: String = "",

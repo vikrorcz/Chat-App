@@ -1,5 +1,6 @@
-package com.bura.chat.screens.viewmodel.ui
+package com.bura.chat.util
 
+import com.bura.chat.data.SearchedUser
 import com.bura.chat.data.room.contacts.Contact
 import com.bura.chat.data.room.messages.Message
 

@@ -1,4 +1,4 @@
-package com.bura.chat.screens.screen.addcontact
+package com.bura.chat.screens.addcontact
 
 import android.annotation.SuppressLint
 import android.widget.Toast
@@ -31,8 +31,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.bura.chat.screens.viewmodel.ui.SearchedUser
-import com.bura.chat.screens.viewmodel.ui.UiResponse
+import com.bura.chat.data.SearchedUser
+import com.bura.chat.util.UiResponse
 import com.bura.chat.ui.theme.ChatTheme
 import com.bura.chat.util.Screen
 import org.koin.androidx.compose.getViewModel
