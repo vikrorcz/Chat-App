@@ -2,6 +2,7 @@
 Simple chat application
 
 Current features: 
+
 Authentication of users
 
 Independent local database, that can handle multiple users at once
