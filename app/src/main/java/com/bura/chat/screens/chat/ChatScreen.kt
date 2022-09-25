@@ -1,10 +1,6 @@
-package com.bura.chat.screens.screen
+package com.bura.chat.screens.screen.chat
 
 import android.annotation.SuppressLint
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -14,13 +10,9 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.filled.Message
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,31 +24,25 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.bura.chat.R
-import com.bura.chat.data.UserPreferences
 import com.bura.chat.data.room.messages.Message
-import com.bura.chat.net.websocket.ChatMessage
 import com.bura.chat.screens.viewmodel.MainViewModel
 import com.bura.chat.screens.viewmodel.ui.UiEvent
 import com.bura.chat.screens.viewmodel.ui.UiResponse
 import com.bura.chat.screens.viewmodel.ui.UiState
 import com.bura.chat.ui.theme.ChatTheme
 import com.bura.chat.util.Screen
-import kotlinx.coroutines.launch
+import org.koin.androidx.compose.getViewModel
 
 @Composable
-fun ChatScreen(navController: NavController, title: String,) {
+fun ChatScreen(navController: NavController, title: String) {
 
-    val viewModel: MainViewModel = viewModel()
+    //val viewModel: MainViewModel = viewModel()
+    val viewModel = getViewModel<MainViewModel>()
     val context = LocalContext.current
     val state = viewModel.uiState
-
-    val coroutineScope = rememberCoroutineScope()
 
     val listState = rememberLazyListState()
 
@@ -68,7 +54,6 @@ fun ChatScreen(navController: NavController, title: String,) {
 
         messageList.addAll(viewModel.getMessageListFromSender(title))
         listState.scrollToItem(messageList.size)
-
 
         viewModel.uiResponse.collect { event ->
             when (event) {
@@ -83,7 +68,6 @@ fun ChatScreen(navController: NavController, title: String,) {
         }
     }
 
-    //enables to receive messages and automatically display them
     viewModel.connectToChat()
 
     ChatTheme {
@@ -107,7 +91,7 @@ fun ChatScreen(navController: NavController, title: String,) {
                 ) {
                     items(messageList) { //data ->
                         Spacer(modifier = Modifier.height(5.dp))
-                        CardComposable(text = it.message, sender = it.sendingUser, user = viewModel.userPreferences.getStringPref(UserPreferences.Prefs.username))
+                        CardComposable(text = it.message, sender = it.sendingUser, user = viewModel.getCurrentUser())
                     }
                 }
             }

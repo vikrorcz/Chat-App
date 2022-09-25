@@ -1,4 +1,4 @@
-package com.bura.chat.screens.screen
+package com.bura.chat.screens.screen.addcontact
 
 import android.annotation.SuppressLint
 import android.widget.Toast
@@ -30,25 +30,20 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.bura.chat.screens.viewmodel.MainViewModel
 import com.bura.chat.screens.viewmodel.ui.SearchedUser
-import com.bura.chat.screens.viewmodel.ui.UiEvent
 import com.bura.chat.screens.viewmodel.ui.UiResponse
-import com.bura.chat.screens.viewmodel.ui.UiState
 import com.bura.chat.ui.theme.ChatTheme
 import com.bura.chat.util.Screen
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import org.koin.androidx.compose.getViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun AddContactScreen(navController: NavController) {
 
-    val viewModel: MainViewModel = viewModel()
+    val viewModel = getViewModel<AddContactViewModel>()
     val context = LocalContext.current
-    val state = viewModel.uiState
+    val state = viewModel.state
 
     val visible = remember {
         mutableStateOf(false)
@@ -104,7 +99,7 @@ fun AddContactScreen(navController: NavController) {
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ToolBarComposable(viewModel: MainViewModel, state: UiState, navController: NavController) {
+private fun ToolBarComposable(viewModel: AddContactViewModel, state: AddContactState, navController: NavController) {
     Scaffold(
         topBar = {
             SmallTopAppBar(
@@ -121,7 +116,7 @@ private fun ToolBarComposable(viewModel: MainViewModel, state: UiState, navContr
 
                 actions = {
                     IconButton(onClick = {
-                        viewModel.onEvent(UiEvent.SearchUser) }) {
+                        viewModel.onEvent(AddContactEvent.SearchUser) }) {
                         Icon(Icons.Default.Search, "")
                     }
                 }
@@ -133,13 +128,13 @@ private fun ToolBarComposable(viewModel: MainViewModel, state: UiState, navContr
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun SearchComposable(viewModel: MainViewModel, state: UiState) {
+private fun SearchComposable(viewModel: AddContactViewModel, state: AddContactState) {
     val focusManager = LocalFocusManager.current
 
     TextField(
         singleLine = true,
         value = state.addNewContact,
-        onValueChange = { viewModel.onEvent(UiEvent.AddContactChanged(it)) },
+        onValueChange = { viewModel.onEvent(AddContactEvent.AddContactChanged(it)) },
         shape = RoundedCornerShape(20.dp),
         label = { Text(stringResource(com.bura.chat.R.string.search)) },
         colors = TextFieldDefaults.textFieldColors(
@@ -153,7 +148,7 @@ private fun SearchComposable(viewModel: MainViewModel, state: UiState) {
 }
 
 @Composable
-private fun SearchedUserComposable(viewModel: MainViewModel, visible: Boolean, user: SearchedUser) {
+private fun SearchedUserComposable(viewModel: AddContactViewModel, visible: Boolean, user: SearchedUser) {
     AnimatedVisibility(visible = visible) {
         Column(modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
@@ -178,13 +173,13 @@ private fun ProfileImageComposable(user: SearchedUser) {
 }
 
 @Composable
-private fun UserInfoComposable(viewModel: MainViewModel,user: SearchedUser) {
+private fun UserInfoComposable(viewModel: AddContactViewModel,user: SearchedUser) {
     Text("Username: ${user.username}")
     Spacer(modifier = Modifier.height(20.dp))
     Text("Email: ${user.email}")
     Spacer(modifier = Modifier.height(20.dp))
     Button(onClick = {
-        viewModel.onEvent(UiEvent.AddUserContact(user))
+        viewModel.onEvent(AddContactEvent.AddUserContact(user))
     }) {
         Text(text = "Add contact")
     }

@@ -1,4 +1,4 @@
-package com.bura.chat.screens.screen
+package com.bura.chat.screens.screen.profile
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
@@ -18,19 +18,17 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.bura.chat.R
-import com.bura.chat.screens.viewmodel.MainViewModel
-import com.bura.chat.screens.viewmodel.ui.UiEvent
 import com.bura.chat.screens.viewmodel.ui.UiResponse
 import com.bura.chat.ui.theme.ChatTheme
 import com.bura.chat.util.Screen
+import org.koin.androidx.compose.getViewModel
 
 @Composable
 fun ProfileScreen(navController: NavController) {
 
-    val viewModel: MainViewModel = viewModel()
+    val viewModel = getViewModel<ProfileViewModel>()
     val context = LocalContext.current
 
     LaunchedEffect(viewModel, context) {
@@ -60,7 +58,7 @@ fun ProfileScreen(navController: NavController) {
                 horizontalAlignment  =  Alignment.CenterHorizontally,
             ) {
                 ProfileImageComposable()
-                LogoutButtonComposable(onEvent = { viewModel.onEvent(UiEvent.Logout) })
+                LogoutButtonComposable(onEvent = { viewModel.onEvent(ProfileEvent.Logout) })
             }
         }
     }

@@ -33,13 +33,15 @@ import com.bura.chat.screens.viewmodel.ui.UiEvent
 import com.bura.chat.screens.viewmodel.ui.UiResponse
 import com.bura.chat.ui.theme.ChatTheme
 import com.bura.chat.util.Screen
+import org.koin.androidx.compose.getViewModel
 
 //SHOWS ALL CONTACTS + options to create group chat or add contact
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ContactsScreen(navController: NavController) {
 
-    val viewModel: MainViewModel = viewModel()
+    //val viewModel: MainViewModel = viewModel()
+    val viewModel = getViewModel<MainViewModel>()
     val state = viewModel.uiState
     val context = LocalContext.current
 
