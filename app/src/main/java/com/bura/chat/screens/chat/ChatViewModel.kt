@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bura.chat.data.UserPreferences
 import com.bura.chat.data.room.messages.Message
-import com.bura.chat.net.MyWebSocketListener
+import com.bura.chat.net.websocket.MyWebSocketListener
 import com.bura.chat.net.websocket.ChatMessage
 import com.bura.chat.repository.MessageRepository
 import com.bura.chat.repository.UserPrefsRepository
@@ -24,7 +24,7 @@ class ChatViewModel(
     var state by mutableStateOf(ChatState())
     val uiResponse = MutableStateFlow<UiResponse>(UiResponse.Null)
 
-    private val listener = MyWebSocketListener(this)
+    private val listener = MyWebSocketListener(this, messageRepository)
     private val webSocket = listener.client.newWebSocket(listener.request, listener)
 
     init {

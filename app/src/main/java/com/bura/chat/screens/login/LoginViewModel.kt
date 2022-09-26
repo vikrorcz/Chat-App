@@ -1,29 +1,32 @@
 package com.bura.chat.screens.login
 
+import android.content.Intent
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat.startForegroundService
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bura.chat.data.UserPreferences
-import com.bura.chat.net.MyWebSocketListener
 import com.bura.chat.net.RestClient
 import com.bura.chat.net.requests.LoginUser
+import com.bura.chat.repository.MessageRepository
+import com.bura.chat.repository.ServerRepository
 import com.bura.chat.repository.UserPrefsRepository
 import com.bura.chat.util.UiResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
+
 class LoginViewModel(
-    private val userPrefsRepository: UserPrefsRepository
+    private val userPrefsRepository: UserPrefsRepository,
+    private val serverRepository: ServerRepository
 ): ViewModel() {
 
     var state by mutableStateOf(LoginState())
 
     val uiResponse = MutableStateFlow<UiResponse>(UiResponse.Null)
-
-    private val listener = MyWebSocketListener(this)
-    private val webSocket = listener.client.newWebSocket(listener.request, listener)
 
     init {
         if (userPrefsRepository.getBooleanPref(UserPreferences.Prefs.rememberme)) {
@@ -39,8 +42,7 @@ class LoginViewModel(
             }
 
             val response = try {
-                val restClient = RestClient()
-                restClient.api.loginUser(LoginUser(state.loginUsername, state.loginPassword))
+                serverRepository.loginUser(LoginUser(state.loginUsername, state.loginPassword))
             } catch (e: Exception) {
                 println(e.message)
                 uiResponse.emit(UiResponse.ConnectionFail)
@@ -72,8 +74,7 @@ class LoginViewModel(
     private fun autoLoginAccount() {
         viewModelScope.launch {
             val response = try {
-                val restClient = RestClient(userPrefsRepository.getStringPref(UserPreferences.Prefs.token))
-                restClient.api.autoLoginUser(userPrefsRepository.getStringPref(UserPreferences.Prefs.token))
+                serverRepository.autoLoginUser(userPrefsRepository.getStringPref(UserPreferences.Prefs.token))
             } catch (e: Exception) {
                 println(e.message)
                 return@launch

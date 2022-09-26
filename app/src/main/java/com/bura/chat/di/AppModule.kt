@@ -1,10 +1,11 @@
 package com.bura.chat.di
 
-import org.koin.androidx.viewmodel.dsl.viewModel
 import com.bura.chat.data.room.contacts.ContactDatabase
 import com.bura.chat.data.room.messages.MessageDatabase
+import com.bura.chat.net.RestClient
 import com.bura.chat.repository.ContactRepository
 import com.bura.chat.repository.MessageRepository
+import com.bura.chat.repository.ServerRepository
 import com.bura.chat.repository.UserPrefsRepository
 import com.bura.chat.screens.addcontact.AddContactViewModel
 import com.bura.chat.screens.chat.ChatViewModel
@@ -15,6 +16,7 @@ import com.bura.chat.screens.recentchat.RecentChatViewModel
 import com.bura.chat.screens.register.RegisterViewModel
 import com.bura.chat.screens.settings.SettingsViewModel
 import org.koin.android.ext.koin.androidContext
+import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val myModule = module {
@@ -32,6 +34,10 @@ val myModule = module {
     }
 
     single {
+        ServerRepository(get())
+    }
+
+    single {
         ContactDatabase.getInstance(androidContext()).contactDao()
     }
 
@@ -39,20 +45,24 @@ val myModule = module {
         MessageDatabase.getInstance(androidContext()).messageDao()
     }
 
-    viewModel {
-        LoginViewModel(get())
+    single {
+        RestClient.getInstance(get())
     }
 
     viewModel {
-        RegisterViewModel()
+        LoginViewModel(get(), get())
     }
 
     viewModel {
-        AddContactViewModel(get(), get())
+        RegisterViewModel(get())
     }
 
     viewModel {
-        SettingsViewModel(get())
+        AddContactViewModel(get(), get(), get())
+    }
+
+    viewModel {
+        SettingsViewModel(get(), get())
     }
 
     viewModel {

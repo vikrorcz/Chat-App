@@ -1,9 +1,9 @@
-package com.bura.chat.net
+package com.bura.chat.net.websocket
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bura.chat.data.room.messages.Message
-import com.bura.chat.net.websocket.ChatMessage
+import com.bura.chat.repository.MessageRepository
 import com.bura.chat.screens.chat.ChatViewModel
 import com.bura.chat.util.UiResponse
 import com.google.gson.Gson
@@ -11,7 +11,11 @@ import kotlinx.coroutines.launch
 import okhttp3.*
 import java.util.concurrent.TimeUnit
 
-class MyWebSocketListener(val viewModel: ViewModel): WebSocketListener() {
+class MyWebSocketListener(
+    val viewModel: ViewModel?,
+    private val messageRepository: MessageRepository
+
+): WebSocketListener() {
 
     private val statusCode = 1000
 
@@ -59,19 +63,16 @@ class MyWebSocketListener(val viewModel: ViewModel): WebSocketListener() {
             message = messageDeserialized.message
         )
 
-        viewModel.viewModelScope.launch {
+        viewModel?.viewModelScope?.launch {
             if (viewModel is ChatViewModel) {
                 viewModel.messageRepository.insert(message)
                 viewModel.uiResponse.emit(UiResponse.AddMessageToList(message = message))
+            } else {
+                messageRepository.insert(message)
             }
         }
         super.onMessage(webSocket, text)
     }
-
-    //override fun onMessage(webSocket: WebSocket, bytes: ByteString) {
-    //    println("MESSAGE: ${bytes.hex()}");
-    //    super.onMessage(webSocket, bytes)
-    //}
 
     override fun onOpen(webSocket: WebSocket, response: Response) {
         //webSocket.send("Hello message")
@@ -79,6 +80,4 @@ class MyWebSocketListener(val viewModel: ViewModel): WebSocketListener() {
 
         super.onOpen(webSocket, response)
     }
-
-
 }

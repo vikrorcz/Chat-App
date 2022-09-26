@@ -31,5 +31,4 @@ interface ServerApi {
 
     @GET("auto-login")
     suspend fun autoLoginUser(@Header("Authorization") token: String): Response<AutoLoginResponse>
-
 }

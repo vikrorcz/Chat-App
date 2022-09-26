@@ -7,12 +7,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bura.chat.net.RestClient
 import com.bura.chat.net.requests.RegisterUser
+import com.bura.chat.repository.ServerRepository
 import com.bura.chat.util.UiResponse
 import com.bura.chat.util.isEmailValid
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
-class RegisterViewModel: ViewModel() {
+class RegisterViewModel(
+    private val serverRepository: ServerRepository
+): ViewModel() {
 
     var state by mutableStateOf(RegisterState())
 
@@ -36,8 +39,7 @@ class RegisterViewModel: ViewModel() {
             }
 
             val response = try {
-                val restClient = RestClient()
-                restClient.api.registerUser(RegisterUser(state.registerEmail, state.registerUsername, state.registerPassword))
+                serverRepository.registerUser(RegisterUser(state.registerEmail, state.registerUsername, state.registerPassword))
             } catch (e: Exception) {
                 uiResponse.emit(UiResponse.ConnectionFail)
                 return@launch

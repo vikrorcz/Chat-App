@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.bura.chat.data.UserPreferences
 import com.bura.chat.net.RestClient
 import com.bura.chat.net.requests.UpdateUserPassword
+import com.bura.chat.repository.ServerRepository
 import com.bura.chat.repository.UserPrefsRepository
 import com.bura.chat.util.UiResponse
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,6 +16,7 @@ import kotlinx.coroutines.launch
 
 class SettingsViewModel(
     private val userPrefsRepository: UserPrefsRepository,
+    private val serverRepository: ServerRepository
 ): ViewModel() {
 
     var state by mutableStateOf(SettingsState())
@@ -23,8 +25,7 @@ class SettingsViewModel(
     private fun changePassword() {
         viewModelScope.launch {
             val response = try {
-                val restClient = RestClient()
-                restClient.api.updatePassword(
+                serverRepository.updatePassword(
                     UpdateUserPassword(userPrefsRepository.getStringPref(UserPreferences.Prefs.username),
                         state.settingsCurrentPassword,
                         state.settingsNewPassword)

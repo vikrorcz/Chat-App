@@ -1,33 +1,45 @@
 package com.bura.chat.net
 
+import com.bura.chat.repository.UserPrefsRepository
 import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class RestClient(token: String) {
+interface RestClient {
 
-    constructor(): this("")
+    companion object {
+        @Volatile
+        private var INSTANCE: ServerApi? = null
 
-    private val BASE_URL: String = "http://192.168.254.38:8080/"
+        fun getInstance(userPrefsRepository: UserPrefsRepository): ServerApi? {
 
-    private val gson = GsonBuilder()
-       .setLenient()
-       .create()
+            val BASE_URL = "http://192.168.254.38:8080/"
 
-    private val tokenInterceptor: TokenInterceptor = TokenInterceptor(token)
+            val gson = GsonBuilder()
+                .setLenient()
+                .create()
 
-    private val httpClient: OkHttpClient = OkHttpClient.Builder()
-        .addInterceptor(tokenInterceptor)
-        .build()
+            val tokenInterceptor = TokenInterceptor(userPrefsRepository)
 
-    val api: ServerApi by lazy {
-        Retrofit.Builder()
-            .client(httpClient)
-            .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create(gson))
-            .build()
-            .create(ServerApi::class.java)
+            val httpClient: OkHttpClient = OkHttpClient.Builder()
+                .addInterceptor(tokenInterceptor)
+                .build()
+
+            synchronized(this) {
+                var instance = INSTANCE
+                if (instance == null) {
+                    instance =  Retrofit.Builder()
+                        .client(httpClient)
+                        .baseUrl(BASE_URL)
+                        .addConverterFactory(GsonConverterFactory.create(gson))
+                        .build()
+                        .create(ServerApi::class.java)
+                    INSTANCE = instance
+                }
+                return instance
+            }
+        }
     }
 }
 

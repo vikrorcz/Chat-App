@@ -12,13 +12,15 @@ import com.bura.chat.net.requests.SearchUser
 import com.bura.chat.repository.ContactRepository
 import com.bura.chat.repository.UserPrefsRepository
 import com.bura.chat.data.SearchedUser
+import com.bura.chat.repository.ServerRepository
 import com.bura.chat.util.UiResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 class AddContactViewModel(
     private val userPrefsRepository: UserPrefsRepository,
-    private val contactRepository: ContactRepository
+    private val contactRepository: ContactRepository,
+    private val serverRepository: ServerRepository
 ): ViewModel() {
     var state by mutableStateOf(AddContactState())
     val uiResponse = MutableStateFlow<UiResponse>(UiResponse.Null)
@@ -27,8 +29,7 @@ class AddContactViewModel(
     private fun searchUser() {
         viewModelScope.launch {
             val response = try {
-                val restClient = RestClient()
-                restClient.api.searchUser(SearchUser(state.addNewContact))
+                serverRepository.searchUser(SearchUser(state.addNewContact))
             } catch (e: Exception) {
                 uiResponse.emit(UiResponse.ConnectionFail)
                 return@launch
